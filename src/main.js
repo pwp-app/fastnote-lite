@@ -1,13 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import aniamted from 'animate.css';
+import './styles/main.less'
 import './plugins/element.js'
 
 Vue.config.productionTip = false
 
-new Vue({
+Vue.use(animated);
+
   router,
-  store,
+new Vue({
   render: h => h(App)
 }).$mount('#app')
