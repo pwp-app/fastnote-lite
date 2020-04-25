@@ -22,6 +22,9 @@
                 letter-spacing: 0.05em;
             }
         }
+        &-logo:hover {
+            cursor: pointer;
+        }
         &-nav {
             float: right;
             a {
@@ -49,7 +52,7 @@
     &-desc {
         max-width: 1200px;
         max-height: 920px;
-        padding: 68px 0px 72px 0;
+        padding: 80px 0px 64px 0;
         margin: 0 auto;
         user-select: none;
         -webkit-user-drag: none;
@@ -61,7 +64,7 @@
             color: @color-primary;
             &-small {
                 font-size: 32px;
-                color: lighten(@color-primary, 7.5%);
+                color: @color-primary;
             }
         }
         &-screenshot {
@@ -84,4 +87,38 @@
     &-download {
         width: 100%;
     }
+    &-footer {
+        background: #f8f8f8;
+        border-top: 1px solid rgba(0,0,0,.0375);
+        &-container {
+            display: flex;
+            flex-direction: row;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        &-copyright {
+            line-height: 64px;
+            font-size: 13px;
+            color: @color-text-light;
+        }
+        &-divide {
+            margin: 16px 24px;
+            height: 32px;
+            border-right: 2px solid rgba(0,0,0,.0375);
+        }
+        &-opensource {
+            line-height: 64px;
+            transform: translateY(3px);
+            color: @color-text-light;
+            transition: 150ms ease;
+        }
+        &-opensource:hover {
+            cursor: pointer;
+            color: darken(@color-text-light, 20%);
+        }
+    }
+}
+// 网页版未开放popper
+.landing-nav-popper {
+    transform: translateY(8px);
 }
