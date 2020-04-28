@@ -1,5 +1,3 @@
-@landing-section-width: 1200px;
-
 .landing {
     &-header {
         width: 100%;
@@ -52,8 +50,8 @@
         }
     }
     &-main {
-        max-width: @landing-section-width;
-        min-height: 720px;
+        max-width: 1200px;
+        min-height: 780px;
         padding: 64px 0px 72px 0;
         margin: 0 auto;
         user-select: none;
@@ -89,11 +87,12 @@
         }
     }
     &-download {
-        padding: 72px 0 92px 0;
+        padding: 72px 0;
+        min-height: 742px;
         &-wrapper {
             display: flex;
             justify-content: center;
-            padding: 128px 0;
+            padding: 136px 0;
         }
         &-image {
             flex: 1;
@@ -200,4 +199,78 @@
 // 网页版未开放popper
 .landing-nav-popper {
     transform: translateY(8px);
+}
+
+// 适配高度 ~900px
+@media (max-height: 900px) {
+    .landing {
+        &-main {
+            padding: 32px 0;
+            min-height: 736px;
+        }
+        &-desc {
+            &-screenshot {
+                margin-top: 72px;
+            }
+        }
+        &-download {
+            &-wrapper {
+                padding: 128px 0;
+            }
+        }
+    }
+}
+
+// 特别适配高度 768px
+@media (max-height: 768px) {
+    .landing {
+        &-download {
+            min-height: 640px;
+            &-wrapper {
+                padding: 102px 0 64px 0;
+            }
+        }
+    }
+}
+
+// 适配高度 ~767px
+@media (max-height: 767px) {
+    .landing {
+        &-main {
+            padding: 4px 0 16px 0;
+            min-height: 640px;
+        }
+        &-desc {
+            &-screenshot {
+                margin-top: 64px;
+            }
+        }
+        &-download {
+            &-wrapper {
+                padding: 112px 0;
+            }
+        }
+    }
+}
+
+// 适配宽度 ~1280px
+@media (max-width: 1280px) {
+    .landing {
+        &-main {
+            max-width: 880px;
+        }
+        &-desc {
+            &-text {
+                font-size: 32px;
+                &-small {
+                    font-size: 28px;
+                }
+            }
+        }
+        &-footer {
+            &-container {
+                max-width: 880px;
+            }
+        }
+    }
 }
