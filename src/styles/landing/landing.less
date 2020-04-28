@@ -93,15 +93,16 @@
             display: flex;
             justify-content: center;
             padding: 136px 0;
+            transform: scale(1.175);
         }
         &-image {
             flex: 1;
             text-align: right;
-            padding-right: 48px;
+            padding-right: 56px;
         }
         &-op {
             flex: 1;
-            padding-left: 48px;
+            padding-left: 56px;
             &-text {
                 color: @color-primary;
                 font-size: 48px;
@@ -216,6 +217,7 @@
         &-download {
             &-wrapper {
                 padding: 128px 0;
+                transform: scale(1);
             }
         }
     }
@@ -267,9 +269,28 @@
                 }
             }
         }
+        &-download {
+            &-wrapper {
+                transform: scale(1);
+            }
+        }
         &-footer {
             &-container {
                 max-width: 880px;
+            }
+        }
+    }
+}
+
+// 适配宽度 ~1024px
+@media(max-width: 1024px) {
+    .landing {
+        &-download {
+            &-image {
+                padding-right: 48px;
+            }
+            &-op {
+                padding-left: 48px;
             }
         }
     }
