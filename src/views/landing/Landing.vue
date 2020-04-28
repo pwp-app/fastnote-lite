@@ -99,7 +99,7 @@ export default {
                 this.$store.commit('client/setStatus', 'failed');
             });
         } else {
-            this.$store.commit('client/setVersion', 'unavaliable');
+            this.$store.commit('client/setStatus', 'unavaliable');
         }
     },
     methods: {

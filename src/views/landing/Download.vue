@@ -19,19 +19,15 @@
                     </transition>
                 </div>
                 <div class="landing-download-op-zone">
-                    <div
-                        class="download-zone-version"
-                        v-if="versionStatus === 'unavaliable'"
-                    >
+                    <div class="download-zone-version" v-if="versionStatus === 'unavaliable'">
                         <span>您的操作系统目前不受支持</span>
                     </div>
                     <div class="download-zone-version" v-else>
-                        <span
-                            >当前版本:
-                            <span style="margin-left: 12px">{{
-                                versionText
-                            }}</span></span
-                        >
+                        <span>当前版本:
+                            <span style="margin-left: 12px">
+                                {{versionText}}
+                            </span>
+                        </span>
                     </div>
                     <div
                         class="download-zone-button"
@@ -39,12 +35,9 @@
                     >
                         <el-button
                             type="success"
-                            :disabled="
-                                versionStatus !== 'resolved' || downloadLoading
-                            "
+                            :disabled="versionStatus !== 'resolved' || downloadLoading"
                             @click="mainDownload"
-                            >下载</el-button
-                        >
+                            >下载</el-button>
                     </div>
                     <div class="download-zone-button" v-else>
                         <el-button disabled>下载</el-button>
@@ -113,6 +106,7 @@ export default {
     },
     computed: {
         versionStatus() {
+            console.log(this.$store.state.client.status);
             return this.$store.state.client.status;
         },
         versionText() {
