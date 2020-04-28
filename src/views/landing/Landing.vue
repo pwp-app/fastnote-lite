@@ -7,8 +7,9 @@
                     <span>Fastnote</span>
                 </div>
                 <nav class="landing-header-nav">
-                    <a>下载</a>
-                    <a>更新日志</a>
+                    <a v-for="navItem in nav" :key="navItem.section" :data-section="navItem.section" @click="handleNavClicked($event)">
+                        {{ navItem.name }}
+                    </a>
                     <div class="landing-header-nav-button">
                         <el-popover
                             placement="bottom"
@@ -26,22 +27,8 @@
                 <div class="clear"></div>
             </div>
         </header>
-        <transition mode="out-in">
-            <section class="landing-desc" v-if="currentSection === 'desc'">
-                <div class="landing-desc-text">
-                    <p>便签，从来没有这么高效过。</p>
-                    <div class="landing-desc-text-small">
-                        <p>Fastnote 以即时聊天一般的交互，给你带来全新的记事体验。</p>
-                    </div>
-                </div>
-                <div class="landing-desc-screenshot">
-                    <img :src="screenshot">
-                    <div class="landing-desc-screenshot-mask"></div>
-                </div>
-            </section>
-            <section class="landing-download">
-
-            </section>
+        <transition name="landing-sections" mode="out-in" enter-active-class="animated fadeInRight faster" leave-to-class="animated fadeOutLeft faster">
+            <router-view></router-view>
         </transition>
         <footer class="landing-footer">
             <div class="landing-footer-container">
@@ -58,19 +45,69 @@
 </template>
 
 <script>
+const verFileBase = "https://update.backrunner.top/fastnote";
+// define window vars
+window.os = (function() {
+    const UserAgent = navigator.userAgent.toLowerCase();
+    return {
+        isIpad: /ipad/.test(UserAgent),
+        isIphone: /iphone os/.test(UserAgent),
+        isAndroid: /android/.test(UserAgent),
+        isWindowsCe: /windows ce/.test(UserAgent),
+        isWindowsMobile: /windows mobile/.test(UserAgent),
+        isWin: /windows nt/.test(UserAgent),
+        isWin2K: /windows nt 5.0/.test(UserAgent),
+        isXP: /windows nt 5.1/.test(UserAgent),
+        isVista: /windows nt 6.0/.test(UserAgent),
+        isWin7: /windows nt 6.1/.test(UserAgent),
+        isWin8: /windows nt 6.2/.test(UserAgent),
+        isWin81: /windows nt 6.3/.test(UserAgent),
+        isWin10: /windows nt 10.0/.test(UserAgent),
+        isMac: /mac os/.test(UserAgent),
+        is64bit: /(wow64|win64)/.test(UserAgent)
+    };
+})();
+
 export default {
     name: 'Landing',
     data() {
         return {
             logo: require('@/assets/images/logo.png'),
-            screenshot: require('@/assets/images/screenshot.png'),
-            // vars
-            currentSection: 'desc'
+            // nav
+            nav: [
+                {
+                    name: '下载',
+                    section: 'download'
+                },
+                {
+                    name: '更新日志',
+                    section: 'update'
+                }
+            ],
+        }
+    },
+    beforeCreate() {
+        // 使用这种方式提前加载内容
+        if (window.os.isWin7 || window.os.isWin8 || window.os.isWin81 || window.os.isWin10) {
+            this.$store.commit('client/setStatus', 'fetching');
+            this.axios.get(`${verFileBase}/win32/${window.os.is64bit ? 'x64/' : ''}ver.json`).then(res => {
+                if (res.status === 200) {
+                    this.$store.commit('client/setStatus', 'resolved');
+                    this.$store.commit('client/setVersion', res.data.ver);
+                }
+            }).catch(() => {
+                this.$store.commit('client/setStatus', 'failed');
+            });
+        } else {
+            this.$store.commit('client/setVersion', 'unavaliable');
         }
     },
     methods: {
+        handleNavClicked(e) {
+            this.$router.push(`/${e.target.getAttribute('data-section')}`);
+        },
         handleLogoClicked() {
-            this.currentSection = 'desc';
+            this.currentSection = this.$router.push(`/`);
         },
         openGitHub() {
             window.open('https://github.com/pwp-app/Fastnote');
