@@ -58,6 +58,7 @@
         -webkit-user-drag: none;
     }
     &-desc {
+        overflow-y: hidden;
         &-text {
             font-size: 36px;
             letter-spacing: 0.1em;
@@ -216,7 +217,7 @@
         }
         &-download {
             &-wrapper {
-                padding: 128px 0;
+                padding: 132px 0;
                 transform: scale(1);
             }
         }
@@ -250,6 +251,17 @@
         &-download {
             &-wrapper {
                 padding: 112px 0;
+            }
+        }
+    }
+}
+
+// 适配高度 ~720px
+@media (max-height: 720px) {
+    .landing {
+        &-download {
+            &-wrapper {
+                padding: 98px 0;
             }
         }
     }
