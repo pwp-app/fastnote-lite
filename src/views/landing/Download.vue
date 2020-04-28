@@ -148,7 +148,7 @@ export default {
             this.downloadStarted = true;
             setTimeout(() => {
                 this.startDownload();
-            }, 3000);
+            }, 2000);
             setTimeout(() => {
                 this.downloadLoading = false;
             }, 5000);
