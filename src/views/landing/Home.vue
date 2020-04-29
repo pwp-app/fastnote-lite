@@ -1,10 +1,10 @@
 <template>
     <section class="landing-main landing-desc">
         <div class="landing-desc-text animated fadeIn">
-            <p>便签，从来没有这么高效过。</p>
+            <p>便签，从未如此高效。</p>
             <div class="landing-desc-text-small">
                 <p>
-                    Fastnote 以即时聊天一般的交互，给你带来全新的记事体验。
+                    全新的交互，让记事就像聊天一样快速、简单。
                 </p>
             </div>
         </div>

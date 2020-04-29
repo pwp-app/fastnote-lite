@@ -6,7 +6,7 @@
                     <img :src="logo">
                     <span>Fastnote</span>
                 </div>
-                <nav class="landing-header-nav">
+                <nav class="landing-header-nav" v-if="$route.path !== '/404'">
                     <a v-for="navItem in nav" :key="navItem.section" :data-section="navItem.section" @click="handleNavClicked($event)">
                         {{ navItem.name }}
                     </a>
@@ -79,10 +79,10 @@ export default {
                     name: '下载',
                     section: 'download'
                 },
-                {
+                /*{
                     name: '更新日志',
                     section: 'update'
-                }
+                }*/
             ],
         }
     },

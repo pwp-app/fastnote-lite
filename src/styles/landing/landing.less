@@ -50,14 +50,16 @@
             }
         }
     }
+    // common section styles
     &-main {
         max-width: 1200px;
-        min-height: 900px;
+        min-height: 748px;
         padding: 64px 0px 72px 0;
         margin: 0 auto;
         user-select: none;
         -webkit-user-drag: none;
     }
+    // desc part styles
     &-desc {
         overflow-y: hidden;
         &-text {
@@ -88,6 +90,7 @@
             }
         }
     }
+    // download part styles
     &-download {
         padding: 68px 0 76px 0;
         min-height: 748px;
@@ -168,6 +171,36 @@
             }
         }
     }
+    // 404 part styles
+    &-404 {
+        transform: scale(1.175);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        &-wrapper {
+            transform: translateY(-35%);
+        }
+        &-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 600;
+            color: @color-primary;
+            letter-spacing: 0.1em;
+            &-small {
+                font-size: 28px;
+            }
+        }
+        &-back {
+            text-align: center;
+            margin-top: 64px;
+            .el-button {
+                font-size: 15px;
+                letter-spacing: 0.05em;
+                font-weight: 600;
+            }
+        }
+    }
     &-footer {
         background: #f8f8f8;
         border-top: 1px solid rgba(0,0,0,.0375);
@@ -234,6 +267,9 @@
                 transform: scale(1);
             }
         }
+        &-404 {
+            transform: scale(1.075);
+        }
     }
 }
 
@@ -266,16 +302,28 @@
                 padding: 112px 0;
             }
         }
+        &-404 {
+            &-wrapper {
+                transform: translateY(-28.75%);
+            }
+        }
     }
 }
 
 // 适配高度 ~720px
 @media (max-height: 720px) {
     .landing {
+        &-main {
+            padding: 4px 0 16px 0;
+            min-height: 580px;
+        }
         &-download {
             &-wrapper {
                 padding: 98px 0;
             }
+        }
+        &-404 {
+            transform: scale(1);
         }
     }
 }
@@ -304,6 +352,9 @@
                 max-width: 880px;
             }
         }
+        &-404 {
+            transform: scale(1.075);
+        }
     }
 }
 
@@ -317,6 +368,9 @@
             &-op {
                 padding-left: 48px;
             }
+        }
+        &-404 {
+            transform: scale(1);
         }
     }
 }

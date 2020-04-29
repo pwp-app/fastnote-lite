@@ -19,17 +19,13 @@ const routes = [
                 path: 'download',
                 name: 'landing.download',
                 component: () => import( /* webpackChunkName: "landing/download" */ '../views/landing/Download.vue'),
-                meta: {
-                    title: '仪表盘',
-                    require: 'user'
-                }
-            }
+            },
+            {
+                path: "/404",
+                name: "404",
+                component: () => import(/* webpackChunkName: "404" */ "../views/common/404.vue"),
+            },
         ],
-    },
-    {
-        path: "/404",
-        name: "404",
-        component: () => import(/* webpackChunkName: "404" */ "../views/common/404.vue"),
     },
     {
         path: "/*",
