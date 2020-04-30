@@ -21,7 +21,12 @@ const routes = [
                 component: () => import( /* webpackChunkName: "landing/download" */ '../views/landing/Download.vue'),
             },
             {
-                path: "/404",
+                path: 'changelog',
+                name: 'landing.changelog',
+                component: () => import( /* webpackChunkName: "landing/changelog" */ '../views/landing/UpdateLog.vue'),
+            },
+            {
+                path: "404",
                 name: "404",
                 component: () => import(/* webpackChunkName: "404" */ "../views/common/404.vue"),
             },
