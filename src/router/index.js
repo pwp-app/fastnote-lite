@@ -33,7 +33,12 @@ const routes = [
         ],
     },
     {
-        path: "/*",
+        path: "/mobile/unavaliable",
+        name: "mobile.unavaliable",
+        component: () => import(/* webpackChunkName: "mobile/unavaliable" */ "../views/mobile/Unavaliable.vue"),
+    },
+    {
+        path: "*",
         redirect: "/404",
     },
 ];

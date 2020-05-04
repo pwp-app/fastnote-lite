@@ -46,27 +46,6 @@
 
 <script>
 const verFileBase = "https://update.backrunner.top/fastnote";
-// define window vars
-window.os = (function() {
-    const UserAgent = navigator.userAgent.toLowerCase();
-    return {
-        isIpad: /ipad/.test(UserAgent),
-        isIphone: /iphone os/.test(UserAgent),
-        isAndroid: /android/.test(UserAgent),
-        isWindowsCe: /windows ce/.test(UserAgent),
-        isWindowsMobile: /windows mobile/.test(UserAgent),
-        isWin: /windows nt/.test(UserAgent),
-        isWin2K: /windows nt 5.0/.test(UserAgent),
-        isXP: /windows nt 5.1/.test(UserAgent),
-        isVista: /windows nt 6.0/.test(UserAgent),
-        isWin7: /windows nt 6.1/.test(UserAgent),
-        isWin8: /windows nt 6.2/.test(UserAgent),
-        isWin81: /windows nt 6.3/.test(UserAgent),
-        isWin10: /windows nt 10.0/.test(UserAgent),
-        isMac: /mac os/.test(UserAgent),
-        is64bit: /(wow64|win64)/.test(UserAgent)
-    };
-})();
 
 export default {
     name: 'Landing',
@@ -86,7 +65,7 @@ export default {
             ],
         }
     },
-    beforeCreate() {
+    created() {
         // 使用这种方式提前加载内容
         if (window.os.isWin7 || window.os.isWin8 || window.os.isWin81 || window.os.isWin10) {
             this.$store.commit('client/setStatus', 'fetching');
