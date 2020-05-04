@@ -8,10 +8,15 @@
                 </p>
             </div>
         </div>
-        <div class="landing-desc-screenshot animated fadeInUp delay-500ms">
-            <img :src="screenshot" />
-            <div class="landing-desc-screenshot-mask"></div>
-        </div>
+        <transition enter-active-class="animated fadeIn faster">
+            <div
+                class="landing-desc-screenshot animated fadeInUp delay-500ms"
+                v-show="screenshotLoaded"
+            >
+                <img :src="screenshot" @load="onScreenshotLoad" />
+                <div class="landing-desc-screenshot-mask"></div>
+            </div>
+        </transition>
     </section>
 </template>
 
@@ -20,8 +25,14 @@ export default {
     name: "landing.home",
     data() {
         return {
-            screenshot: require("@/assets/images/screenshot.png")
+            screenshot: require("@/assets/images/screenshot.png"),
+            screenshotLoaded: false
         };
+    },
+    methods: {
+        onScreenshotLoad() {
+            this.screenshotLoaded = true;
+        }
     }
 };
 </script>
