@@ -34,11 +34,18 @@
                 font-size: 17px;
                 color: @color-text-light;
                 font-weight: 600;
-                transition: 150ms ease;
+                transition: 100ms ease;
             }
             a:hover {
                 cursor: pointer;
                 color: lighten(@color-text-light, 15%);
+            }
+            .nav-active {
+                color: @color-primary;
+            }
+            .nav-active:hover {
+                cursor: auto;
+                color: @color-primary;
             }
             &-button {
                 display: inline;

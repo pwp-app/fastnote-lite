@@ -8,7 +8,7 @@
                         <span>Fastnote</span>
                     </div>
                     <nav class="landing-header-nav" v-if="$route.path !== '/404'">
-                        <a v-for="navItem in nav" :key="navItem.section" :data-section="navItem.section" @click="handleNavClicked($event)">
+                        <a v-for="navItem in nav" :id="`nav-${navItem.section.length ? navItem.section : 'home'}`" :key="navItem.section" :data-section="navItem.section" @click="handleNavClicked($event)">
                             {{ navItem.name }}
                         </a>
                         <div class="landing-header-nav-button">
@@ -58,6 +58,10 @@ export default {
             // nav
             nav: [
                 {
+                    name: '首页',
+                    section: ''
+                },
+                {
                     name: '下载',
                     section: 'download'
                 },
@@ -84,9 +88,23 @@ export default {
             this.$store.commit('client/setStatus', 'unavaliable');
         }
     },
+    mounted() {
+        // 默认nav激活
+        document.getElementById(`nav-${this.$route.name.split('.')[1]}`).setAttribute('class', 'nav-active');
+    },
     methods: {
         handleNavClicked(e) {
-            this.$router.push(`/${e.target.getAttribute('data-section')}`);
+            let section = e.target.getAttribute('data-section');
+            // 同一页，不做push
+            if ((section.length ? section : 'home') === this.$route.name.split('.')[1]) {
+                return;
+            }
+            this.$router.push(`/${section}`);
+            let activated = document.getElementsByClassName('nav-active');
+            for (let el of activated) {
+                el.removeAttribute('class');
+            }
+            e.target.setAttribute('class', 'nav-active');
         },
         handleLogoClicked() {
             this.currentSection = this.$router.push(`/`);
