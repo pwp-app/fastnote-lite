@@ -5,7 +5,6 @@
         </div>
         <el-tabs
             v-model="activeTab"
-            @tab-click="handleClick"
         >
             <el-tab-pane v-for="v in logs" :key="v.version" :label="v.version" :name="v.version">
                 <el-timeline>
