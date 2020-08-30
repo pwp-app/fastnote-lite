@@ -91,6 +91,7 @@
 </template>
 
 <script>
+import { saveAs } from 'file-saver';
 const downloadBase = "http://update.backrunner.top/fastnote";
 
 export default {
@@ -159,7 +160,7 @@ export default {
             this.startDownload();
         },
         startDownload() {
-            window.open(this.downloadURL, "_blank");
+            saveAs(this.downloadURL, `Fastnote Setup ${this.version}.exe`);
         }
     }
 };
