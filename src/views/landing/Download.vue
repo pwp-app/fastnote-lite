@@ -91,7 +91,6 @@
 </template>
 
 <script>
-import { saveAs } from 'file-saver';
 const downloadBase = "http://update.backrunner.top/fastnote";
 
 export default {
@@ -146,6 +145,8 @@ export default {
             }, 2000);
             setTimeout(() => {
                 this.downloadLoading = false;
+                const iframe = document.getElementById('iframe-download');
+                if (iframe) iframe.parentNode.removeChild(iframe);
             }, 5000);
         },
         download(version) {
@@ -160,7 +161,11 @@ export default {
             this.startDownload();
         },
         startDownload() {
-            saveAs(this.downloadURL, `Fastnote Setup ${this.version}.exe`);
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('id', 'iframe-download');
+            iframe.setAttribute('src', this.downloadURL);
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
         }
     }
 };
