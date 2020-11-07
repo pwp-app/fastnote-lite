@@ -1,19 +1,19 @@
 const state = {
-    status: null,
-    version: null
-}
+  status: null,
+  version: null,
+};
 
 const mutations = {
-    setStatus (state, status) {
-        state.status = status;
-    },
-    setVersion (state, version) {
-        state.version = version;
-    }
-}
+  setStatus(state, status) {
+    state.status = status;
+  },
+  setVersion(state, version) {
+    state.version = version;
+  },
+};
 
 export default {
-    namespaced: true,
-    state,
-    mutations
-}
+  namespaced: true,
+  state,
+  mutations,
+};

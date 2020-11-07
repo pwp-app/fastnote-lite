@@ -1,0 +1,62 @@
+.landing-portal {
+  padding: 84px 120px;
+}
+
+.portal-disabled {
+  margin: 96px 0;
+  &-logo {
+    text-align: center;
+    img {
+      width: 112px;
+    }
+  }
+  &-text {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 36px;
+    letter-spacing: 0.05rem;
+    color: @color-primary;
+  }
+}
+
+.portal-form {
+  width: 640px;
+  margin: 0 auto;
+  &-header {
+    font-size: 24px;
+    font-weight: 600;
+    color: @color-primary;
+    letter-spacing: 0.05rem;
+  }
+  &-body {
+    .el-input {
+      width: 386px;
+      margin-right: 12px;
+      button {
+        width: 100%;
+      }
+    }
+    .el-form-item {
+      margin-bottom: 28px;
+      img {
+        display: inline-block;
+        height: 40px;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+    }
+  }
+  &-button {
+    margin-bottom: 16px !important;
+  }
+  &-tip {
+    color: @color-primary;
+    font-size: 14px;
+    transition: color 150ms;
+  }
+  &-tip:hover {
+    color: lighten(@color-primary, 12.5%);
+    cursor: pointer;
+  }
+}
