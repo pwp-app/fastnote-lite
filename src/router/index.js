@@ -38,6 +38,11 @@ const routes = [
     ],
   },
   {
+    path: '/app',
+    name: 'app',
+    component: () => import(/* webpackChunkName: "lite" */ '../views/app/App.vue'),
+  },
+  {
     path: '/mobile/unavaliable',
     name: 'mobile.unavaliable',
     component: () => import(/* webpackChunkName: "mobileLanding" */ '../views/mobile/Unavaliable.vue'),
