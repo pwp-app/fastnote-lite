@@ -89,6 +89,7 @@ export default {
     // 功能
     listenEvents() {
       this.$bus.$on('change-category', this.changeCategory);
+      this.$bus.$on('add-category', this.addCategory);
     },
     // 数据
     async checkAuth() {
@@ -207,6 +208,44 @@ export default {
       });
     },
     // 事件处理
+    async addCategory(category) {
+      const idx = this.categories.findIndex(item => item.name === category);
+      if (idx >= 0) {
+        this.$message.error('该分类已存在');
+        return;
+      }
+      const newCategory = {
+        name: category,
+        count: 0,
+      };
+      const categories = [
+        ...this.categories,
+        newCategory,
+      ];
+      const res = await this.saveCategories(categories);
+      if (!res) {
+        this.$message.error('保存新分类失败');
+        return;
+      }
+      this.categories.push(newCategory);
+      this.$bus.$emit('category-added');
+    },
+    async saveCategories(categories) {
+      const cat = categories || this.categories;
+      try {
+        const res = await this.axios.post(`${this.API_BASE}/category/update`, {
+          categories: pako.gzip(JSON.stringify(cat), { to: 'string' }),
+        }, {
+          headers: {
+            Authorization: `Bearer ${this.$auth.authToken}`,
+          },
+        });
+        return res.data && res.data.success ? true : false;
+      } catch (err) {
+        console.error('Save categories error: ', err);
+        return false;
+      }
+    },
     changeCategory(category) {
       if (category === 'all') {
         this.currentCategory = null;

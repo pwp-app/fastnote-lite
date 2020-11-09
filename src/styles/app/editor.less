@@ -1,28 +1,24 @@
-@editor-inner-padding: 16px;
-@editor-outer-padding: 24px;
-@editor-inner-height: @editor-height - 2 * @editor-outer-padding;
-@editor-header-height: 32px;
-@edidor-zone-margin: 14px;
-@editor-zone-height: @editor-inner-height - @editor-header-height - @editor-outer-padding - @edidor-zone-margin * 2;
-@editor-zone-width: calc(100vw - @side-width - @editor-inner-padding * 2);
-
 .note-editor {
-  height: @editor-inner-height;
+  height: 100%;
   z-index: 5;
   border-top: 1px solid @color-gray-border;
-  padding: @editor-inner-padding @editor-outer-padding;
+  padding: 16px 24px;
   background: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
   &-header {
     display: flex;
     align-items: center;
     color: @color-text-regular-light;
-    height: @editor-header-height;
-    line-height: @editor-header-height;
+    flex-basis: 32px;
+    line-height: 32px;
+    flex-shrink: 0;
     span {
       display: block;
       font-size: 15px;
       letter-spacing: 0.1rem;
-      flex-grow: 1;
+      flex: 1;
     }
     &-ctrl {
       justify-content: flex-end;
@@ -32,11 +28,13 @@
     }
   }
   &-main {
-    margin-top: @edidor-zone-margin;
+    margin-top: 8px;
     position: relative;
+    flex: 1;
+    box-sizing: border-box;
     textarea {
-      width: @editor-zone-width;
-      height: @editor-zone-height;
+      width: 100%;
+      height: 100%;
       text-align: justify;
       border: 0;
       padding: 8px 10px;
@@ -47,7 +45,8 @@
       border-radius: 4px;
       letter-spacing: 0.05em;
       color: @color-text-regular-light;
-      background: #fdfdfd
+      background: #fdfdfd;
+      box-sizing: border-box;
     }
     textarea::-webkit-scrollbar {
       width: 6.5px;

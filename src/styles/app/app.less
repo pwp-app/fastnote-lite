@@ -1,5 +1,5 @@
-@editor-height: 275px;
-@side-width: 300px;
+@editor-height: 260px;
+@side-width: 272px;
 
 .app {
   width: 100%;
@@ -8,6 +8,7 @@
   display: flex;
   &-aside {
     width: @side-width;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     box-shadow: 2px 0 18px rgba(0, 0, 0, 0.015);
@@ -21,14 +22,18 @@
     }
   }
   &-main {
-    flex-grow: 1;
+    flex: 1;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     &-top {
-      flex-grow: 1;
+      flex: 1;
+      height: calc(100vh - @editor-height);
     }
     &-bottom {
+      position: relative;
       height: @editor-height;
+      flex-shrink: 0;
     }
   }
 }
