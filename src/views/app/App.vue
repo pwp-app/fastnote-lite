@@ -3,9 +3,12 @@
     <div class="app-aside">
       <div class="app-aside-content">
         <CategoryList
-          v-if="currentTab === 'category'"
+          v-show="currentTab === 'category'"
           :categories="categories"
           :currentCategory="currentCategory"
+          />
+        <UserPanel
+          v-show="currentTab === 'user'"
           />
       </div>
       <SideTabs
@@ -33,6 +36,7 @@
 import NoteList from "../../components/app/NoteList";
 import NoteEditor from "../../components/app/NoteEditor";
 import CategoryList from "../../components/app/CategoryList";
+import UserPanel from '../../components/app/UserPanel';
 import SideTabs from "../../components/app/SideTabs";
 import moment from "moment";
 import pako from "pako";
@@ -44,6 +48,7 @@ export default {
     NoteList,
     NoteEditor,
     CategoryList,
+    UserPanel,
     SideTabs,
   },
   data() {
@@ -102,6 +107,7 @@ export default {
       this.$bus[`\$${op}`]('editor-collapse', this.editorCollapse);
       this.$bus[`\$${op}`]('editor-expand', this.editorExpand);
       this.$bus[`\$${op}`]('add-note', this.addNote);
+      this.$bus[`\$${op}`]('change-tab', this.changeTab);
     },
     // 数据
     async checkAuth() {
@@ -223,6 +229,9 @@ export default {
       });
     },
     // 事件处理
+    changeTab(tab) {
+      this.currentTab = tab;
+    },
     async addCategory(category) {
       const idx = this.categories.findIndex(item => item.name === category);
       if (idx >= 0) {
