@@ -19,7 +19,10 @@
           :isCategory="isCategory"
           />
       </div>
-      <div class="app-main-bottom">
+      <div :class="{
+        'app-main-bottom': true,
+        'app-main-bottom__collapsed': editorCollapsed,
+        }">
         <NoteEditor />
       </div>
     </div>
@@ -31,6 +34,7 @@ import NoteList from "../../components/app/NoteList";
 import NoteEditor from "../../components/app/NoteEditor";
 import CategoryList from "../../components/app/CategoryList";
 import SideTabs from "../../components/app/SideTabs";
+import moment from "moment";
 import pako from "pako";
 import "font-awesome/css/font-awesome.min.css";
 
@@ -49,8 +53,10 @@ export default {
       // note
       notes: [],
       noteMap: {},
+      currentNoteId: 0,
       page: 1,
       pageSize: 20,
+      editorCollapsed: false,
       // category
       categories: [],
       categoryMap: {},
@@ -83,13 +89,19 @@ export default {
       this.$message.error("获取分类列表失败");
     }
     // 监听事件
-    this.listenEvents();
+    this.listenEvents('on');
+  },
+  beforeDestroy() {
+    this.listenEvents('off');
   },
   methods: {
     // 功能
-    listenEvents() {
-      this.$bus.$on('change-category', this.changeCategory);
-      this.$bus.$on('add-category', this.addCategory);
+    listenEvents(op) {
+      this.$bus[`\$${op}`]('change-category', this.changeCategory);
+      this.$bus[`\$${op}`]('add-category', this.addCategory);
+      this.$bus[`\$${op}`]('editor-collapse', this.editorCollapse);
+      this.$bus[`\$${op}`]('editor-expand', this.editorExpand);
+      this.$bus[`\$${op}`]('add-note', this.addNote);
     },
     // 数据
     async checkAuth() {
@@ -190,6 +202,9 @@ export default {
       const { notes, noteMap, categoryMap } = this;
       data.forEach((item) => {
         const { noteId, syncId, content, category } = item;
+        if (noteId >= this.currentNoteId) {
+          this.currentNoteId = noteId + 1;
+        }
         const note = JSON.parse(pako.ungzip(content, { to: "string" }));
         notes.push(note);
         noteMap[noteId] = note;
@@ -252,6 +267,68 @@ export default {
         return;
       }
       this.currentCategory = category;
+    },
+    editorCollapse() {
+      this.editorCollapsed = true;
+    },
+    editorExpand() {
+      this.editorCollapsed = false;
+    },
+    async addNote(text) {
+      const { currentCategory } = this;
+      const note = {
+        id: this.currentNoteId,
+        time: moment().format('YYYY年MM月DD日'),
+        rawtime: moment().format('YYYYMMDDHHmmss'),
+        text,
+        offset: 0,
+        forceTop: false,
+        markdown: false,
+        category: !currentCategory || currentCategory === 'notalloc' ? null : currentCategory,
+      };
+      const saveRes = await this.saveNote(note);
+      if (!saveRes) {
+        this.$message.error('保存便签失败');
+        return;
+      }
+      this.notes.unshift(note);
+      this.noteMap[note.id] = note;
+      this.categoryMap[note.category || 'notalloc'].push(note);
+      if (note.category) {
+        const idx = this.categories.findIndex(item => item.name === note.category);
+        if (idx > -1) {
+          this.categories[idx].count += 1;
+        }
+        await this.saveCategories();
+      } else {
+        const idx = this.categories.findIndex(item => item.name === 'all');
+        const idx_notalloc = this.categories.findIndex(item => item.name === 'notalloc');
+        this.categories[idx].count += 1;
+        this.categories[idx_notalloc].count += 1;
+        await this.saveCategories();
+      }
+      this.$bus.$emit('note-added', this.currentNoteId);
+      this.currentNoteId += 1;
+    },
+    async saveNote(note) {
+      try {
+        const res = await this.axios.post(`${this.API_BASE}/note/save`, {
+          noteId: note.id,
+          category: note.category || null,
+          content: pako.gzip(JSON.stringify(note), { to: 'string' }),
+        }, {
+          headers: {
+            Authorization: `Bearer ${this.$auth.authToken}`,
+          }
+        });
+        if (!res.data || !res.data.success) {
+          return false;
+        }
+        return true;
+      } catch (err) {
+        console.error('Save note error: ', err);
+        return false;
+      }
     },
   },
 };

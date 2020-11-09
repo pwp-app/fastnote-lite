@@ -5,6 +5,7 @@
 .note-list {
   min-height: calc(100vh - @editor-height);
   padding: 12px 0;
+  overflow-x: hidden;
   overflow-y: auto;
   background: #fdfdfd;
   scroll-behavior: smooth;
@@ -72,6 +73,10 @@
       .note-time {
         font-size: 12px;
         justify-self: flex-end;
+        user-select: none;
+      }
+      .note-time__clickable:hover {
+        cursor: pointer;
       }
     }
     .note-content {

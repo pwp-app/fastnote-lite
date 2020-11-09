@@ -23,11 +23,14 @@ export default {
     };
   },
   created() {
-    this.listenEvents();
+    this.listenEvents('on');
+  },
+  beforeDestroy() {
+    this.listenEvents('off');
   },
   methods: {
-    listenEvents() {
-      this.$bus.$on('category-added', this.handleCancelClick);
+    listenEvents(op) {
+      this.$bus[`\$${op}`]('category-added', this.handleCancelClick);
     },
     handleClick() {
       this.inputMode = true;

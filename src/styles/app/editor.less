@@ -2,7 +2,7 @@
   height: 100%;
   z-index: 5;
   border-top: 1px solid @color-gray-border;
-  padding: 16px 24px;
+  padding: 12px 24px 16px 24px;
   background: #fdfdfd;
   display: flex;
   flex-direction: column;
@@ -24,6 +24,11 @@
       justify-content: flex-end;
       i {
         font-size: 22px;
+        transition: 100ms;
+      }
+      i:hover {
+        color: lighten(@color-text-regular-light, 5%);
+        cursor: pointer;
       }
     }
   }
@@ -63,6 +68,28 @@
     }
     textarea:focus {
       outline: 0;
+    }
+  }
+}
+
+.note-editor-collapsed {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 5;
+  border-top: 1px solid @color-gray-border;
+  &__ctrl {
+    flex: 1;
+    text-align: right;
+    margin-right: 24px;
+    color: @color-text-regular-light;
+    font-size: 22px;
+    i {
+      transition: 100ms
+    }
+    i:hover {
+      color: lighten(@color-text-regular-light, 5%);
+      cursor: pointer;
     }
   }
 }
