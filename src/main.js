@@ -38,7 +38,7 @@ const authData = {
 if (authStr) {
   const stored = JSON.parse(authStr);
   const { authToken, refreshToken, fetchTime } = stored;
-  if (moment(fetchTime, 'YYYYMMDDHHmmss').add(30, 'minutes').valueOf() > moment().valueOf()) {
+  if (moment(fetchTime, 'YYYYMMDDHHmmss').add(30, 'minute').valueOf() > moment().valueOf()) {
     authData.authToken = authToken;
   }
   if (moment(fetchTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() > moment().valueOf()) {
@@ -46,15 +46,17 @@ if (authStr) {
   }
 }
 
-// event bus
-Vue.prototype.$bus = new Vue();
-
-Vue.prototype.$auth = authData;
-Vue.prototype.$refreshToken = async () => {
+const refreshToken = async () => {
+  if (!authData.refreshToken) {
+    return false;
+  }
+  // 刷新token
   let res;
   try {
-    res = await axios.post(`${API_BASE}/user/refreshToken`, {
-      token: authData.refreshToken,
+    res = await axios.get(`${API_BASE}/user/refreshToken`, {
+      params: {
+        token: authData.refreshToken,
+      },
     });
   } catch (err) {
     console.error('Refresh token request error: ', err);
@@ -63,7 +65,7 @@ Vue.prototype.$refreshToken = async () => {
   if (!res || !res.data) {
     return false;
   }
-  const { success, data } = res;
+  const { success, data } = res.data;
   if (!success || !data) {
     return false;
   }
@@ -71,8 +73,21 @@ Vue.prototype.$refreshToken = async () => {
   authData.fetchTime = moment().format('YYYYMMDDHHmmss');
   authData.authToken = authToken;
   authData.refreshToken = refreshToken;
+  window.localStorage.setItem('cloud-auth', JSON.stringify(authData));
+  // 定时刷新token任务
+  if (!window.tokenCron) {
+    window.tokenCron = setInterval(() => {
+      refreshToken();
+    }, 1 * 3600 * 1000);
+    window.addEventListener('unload', () => {
+      clearInterval(window.tokenCron);
+    });
+  }
   return true;
 };
+
+Vue.prototype.$auth = authData;
+Vue.prototype.$refreshToken = refreshToken;
 
 Vue.prototype.$pingCloud = async () => {
   let ret = true;
@@ -85,7 +100,7 @@ Vue.prototype.$pingCloud = async () => {
     ret = false;
   }
   return ret;
-}
+};
 
 Vue.prototype.$pingCloudAuth = async () => {
   let ret = true;
@@ -102,7 +117,10 @@ Vue.prototype.$pingCloudAuth = async () => {
     ret = false;
   }
   return ret;
-}
+};
+
+// event bus
+Vue.prototype.$bus = new Vue();
 
 new Vue({
   router,

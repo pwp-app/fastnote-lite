@@ -9,7 +9,7 @@ export default {
 		count: Number,
 		countAutoStart: {
 			type: Boolean,
-			defaultValue: false,
+			default: false,
 		}
   },
   data() {

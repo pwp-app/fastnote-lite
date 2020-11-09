@@ -1,0 +1,69 @@
+@editor-inner-padding: 16px;
+@editor-outer-padding: 24px;
+@editor-inner-height: @editor-height - 2 * @editor-outer-padding;
+@editor-header-height: 32px;
+@edidor-zone-margin: 14px;
+@editor-zone-height: @editor-inner-height - @editor-header-height - @editor-outer-padding - @edidor-zone-margin * 2;
+@editor-zone-width: calc(100vw - @side-width - @editor-inner-padding * 2);
+
+.note-editor {
+  height: @editor-inner-height;
+  z-index: 5;
+  border-top: 1px solid @color-gray-border;
+  padding: @editor-inner-padding @editor-outer-padding;
+  background: #fdfdfd;
+  &-header {
+    display: flex;
+    align-items: center;
+    color: @color-text-regular-light;
+    height: @editor-header-height;
+    line-height: @editor-header-height;
+    span {
+      display: block;
+      font-size: 15px;
+      letter-spacing: 0.1rem;
+      flex-grow: 1;
+    }
+    &-ctrl {
+      justify-content: flex-end;
+      i {
+        font-size: 22px;
+      }
+    }
+  }
+  &-main {
+    margin-top: @edidor-zone-margin;
+    position: relative;
+    textarea {
+      width: @editor-zone-width;
+      height: @editor-zone-height;
+      text-align: justify;
+      border: 0;
+      padding: 8px 10px;
+      resize: none;
+      font-weight: 400;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      color: @color-text-regular-light;
+      background: #fdfdfd
+    }
+    textarea::-webkit-scrollbar {
+      width: 6.5px;
+    }
+    textarea::-webkit-scrollbar-track-piece {
+      background-color: #fdfdfd;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      border-radius: 9px;
+      background-color: lightgray;
+    }
+    textarea::-webkit-scrollbar-button {
+      display: none;
+    }
+    textarea:focus {
+      outline: 0;
+    }
+  }
+}

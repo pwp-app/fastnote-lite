@@ -1,0 +1,203 @@
+@color-note-background: darken(@color-primary, 5%);
+@color-note-text: @color-text-accent;
+@color-note-header-split: @color-text-accent;
+
+.note-list {
+  min-height: calc(100vh - @editor-height);
+  padding: 12px 0;
+  overflow-y: auto;
+  background: #fdfdfd;
+  scroll-behavior: smooth;
+  position: relative;
+  z-index: 1;
+}
+
+.note-list::-webkit-scrollbar {
+  width: 8px;
+  z-index: 10;
+}
+
+.note-list::-webkit-scrollbar-thumb {
+  border-radius: 9px;
+  background-color: lightgray;
+}
+
+.note-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+.note-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &-inner {
+    color: @color-primary;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 36px;
+    letter-spacing: 0.1rem;
+    text-align: center;
+    transform: translateY(-10%);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, .0125);
+  }
+}
+
+.note-wrapper:first-child {
+  padding-top: 4px;
+}
+
+.note-wrapper {
+  padding: 8px 24px;
+  .note {
+    color: @color-note-text;
+    background-color: @color-note-background;
+    border-radius: 8px;
+    box-shadow: 0px 2px 12px rgba(0, 0, 0, .05);
+    padding: 6px 12px;
+    .note-header {
+      border-bottom: solid @color-note-header-split 1px;
+      height: 32px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      .note-no {
+        font-size: 15px;
+      }
+      .note-title {
+        font-size: 14px;
+        margin-left: 8px;
+        flex-grow: 1;
+      }
+      .note-time {
+        font-size: 12px;
+        justify-self: flex-end;
+      }
+    }
+    .note-content {
+      width: 100%;
+      margin-top: 8px;
+      margin-bottom: 5px;
+      .note-text {
+        h1, h2, h3, h4, h5 {
+          margin-bottom: 0;
+        }
+        h1 {
+          font-size: 18px;
+          font-weight: bold;
+          line-height: 38px;
+          vertical-align: middle;
+        }
+        h2 {
+          font-size: 17px;
+          font-weight: bold;
+          line-height: 32px;
+          vertical-align: middle;
+        }
+        h3 {
+          font-size: 16px;
+          font-weight: bold;
+          line-height: 32px;
+          vertical-align: middle;
+        }
+        h4 {
+          font-size: 15px;
+          font-weight: bold;
+          line-height: 28px;
+          vertical-align: middle;
+        }
+        h5 {
+          font-size: 14px;
+          font-weight: bold;
+          line-height: 28px;
+          vertical-align: middle;
+        }
+        hr {
+          background-color: @color-note-text;
+          height: 1px;
+          border: 0;
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+        pre {
+          margin: 8px 0;
+          border: 1px solid @color-note-text;
+          border-radius: 4px;
+          padding: 4px 12px;
+          color: @color-note-text;
+        }
+        pre::-webkit-scrollbar {
+          height: 5px;
+        }
+        pre::-webkit-scrollbar-track-piece {
+          background-color: @color-primary;
+          border-radius: 8px;
+        }
+        pre::-webkit-scrollbar-thumb {
+          border-radius: 9px;
+          background-color: @color-secondary;
+        }
+        pre::-webkit-scrollbar-button {
+          display: none;
+        }
+        img {
+          margin: 12px 0;
+          max-width: 80vh;
+        }
+      }
+      p {
+        font-size: 15px;
+        line-height: 24px;
+        letter-spacing: 0.06em;
+        padding: 0;
+        margin: 0;
+        word-break: break-all;
+        overflow-x: hidden;
+        text-justify: auto;
+        user-select: text;
+        vertical-align: middle;
+      }
+      a {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: @color-note-text;
+        font-size: 15px;
+        text-decoration: underline;
+        letter-spacing: 0.06em;
+        transition: 100ms;
+      }
+      a:hover {
+        color: lighten(@color-note-text, 5%);
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.note-selected {
+  background: darken(@color-secondary, 2.5%);
+}
+
+.note-overheight {
+  height: 250px;
+  padding-right: 12px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.note-overheight::-webkit-scrollbar {
+  width: 5px;
+}
+
+.note-overheight::-webkit-scrollbar-track-piece {
+  background-color: @color-primary;
+  border-radius: 8px;
+}
+
+.note-overheight::-webkit-scrollbar-thumb {
+  border-radius: 9px;
+  background-color: @color-secondary;
+}
+
+.note-overheight::-webkit-scrollbar-button {
+  display: none;
+}

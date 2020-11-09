@@ -65,12 +65,12 @@ export default {
             this.$router.push('/app');
             return;
           } else {
-            this.$message.warn('自动登录失败');
+            this.$message.error('自动登录失败');
             this.autoLogin = false;
             return;
           }
         } else {
-          this.$message.warn('自动登录失败');
+          this.$message.error('自动登录失败');
           this.autoLogin = false;
           return;
         }
