@@ -1,5 +1,8 @@
 <template>
-  <div class="note-wrapper">
+  <div :class="{
+    'note-wrapper': true,
+    'animated fadeInRight faster': note.isNew,
+    }">
     <div
       :id="`note-${note.id}`"
       class="note"
@@ -57,7 +60,9 @@ export default {
       }
     },
     displayText() {
-      return this.note.text;
+      let { text } = this.note;
+      text = text.replace(/\r?\n/g, '<br>');
+      return text;
     },
   },
   methods: {

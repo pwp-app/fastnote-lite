@@ -69,12 +69,6 @@ export default {
     handleNoteAdded(noteId) {
       this.$message.success('便签已添加');
       this.text = '';
-      setTimeout(() => {
-        const noteEl = document.getElementById(`note-${noteId}`);
-        if (noteEl) {
-          noteEl.setAttribute('class', 'note animated fadeInRight faster');
-        }
-      }, 0);
     }
   },
 }

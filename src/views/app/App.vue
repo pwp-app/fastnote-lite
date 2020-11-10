@@ -285,7 +285,7 @@ export default {
     },
     async addNote(text) {
       const { currentCategory } = this;
-      const note = {
+      let note = {
         id: this.currentNoteId,
         time: moment().format('YYYY年MM月DD日'),
         rawtime: moment().format('YYYYMMDDHHmmss'),
@@ -300,19 +300,28 @@ export default {
         this.$message.error('保存便签失败');
         return;
       }
+      note = {
+        ...note,
+        isNew: true,
+      };
       this.notes.unshift(note);
       this.noteMap[note.id] = note;
-      this.categoryMap[note.category || 'notalloc'].push(note);
-      if (note.category) {
-        const idx = this.categories.findIndex(item => item.name === note.category);
-        if (idx > -1) {
-          this.categories[idx].count += 1;
+      const { category: noteCat } = note;
+      if (noteCat && noteCat !== 'notalloc') {
+        if (!this.categoryMap[noteCat]) {
+          this.categoryMap[noteCat] = [];
         }
+        this.categoryMap[noteCat].unshift(note);
+        const idx = this.categories.findIndex(item => item.name === note.category);
+        const idx_all = this.categories.findIndex(item => item.name === 'all');
+        this.categories[idx].count += 1;
+        this.categories[idx_all].count += 1;
         await this.saveCategories();
       } else {
-        const idx = this.categories.findIndex(item => item.name === 'all');
+        this.categoryMap['notalloc'].unshift(note);
+        const idx_all = this.categories.findIndex(item => item.name === 'all');
         const idx_notalloc = this.categories.findIndex(item => item.name === 'notalloc');
-        this.categories[idx].count += 1;
+        this.categories[idx_all].count += 1;
         this.categories[idx_notalloc].count += 1;
         await this.saveCategories();
       }
