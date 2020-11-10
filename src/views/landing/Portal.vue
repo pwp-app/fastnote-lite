@@ -42,7 +42,7 @@ export default {
   },
   async created() {
     this.usable = await this.$pingCloud();
-    if (this.autoLogin) {
+    if (this.autoLogin && this.usable) {
       await this.tryAutoLogin();
     }
   },
