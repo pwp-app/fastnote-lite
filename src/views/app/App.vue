@@ -99,10 +99,7 @@ export default {
     if (!fetchCategoryRet) {
       this.$message.error("获取分类列表失败");
     }
-    const fetchUserInfoRet = await this.fetchUserInfo();
-    if (!fetchUserInfoRet) {
-      this.$message.error("获取用户信息失败");
-    }
+    this.fetchUserInfo();
   },
   beforeDestroy() {
     this.listenEvents('off');
@@ -226,9 +223,11 @@ export default {
         const {
           data: { id: uid, username, email },
         } = res.data;
-        this.uid = uid;
-        this.username = username;
-        this.email = email;
+        this.user = {
+          uid,
+          username,
+          email,
+        };
         return true;
       } catch (err) {
         this.$message.error("获取用户信息失败");

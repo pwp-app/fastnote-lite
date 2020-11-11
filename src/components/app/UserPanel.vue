@@ -3,7 +3,7 @@
     <div class="user-avatar">
       <el-avatar :size="72" :src="avatarSrc"></el-avatar>
       <div class="user-avatar-name">
-        <span>{{ username }}</span>
+        <span>{{ user.username || '' }}</span>
       </div>
     </div>
     <div class="user-main">
@@ -18,17 +18,17 @@
 import md5 from "crypto-js/md5";
 
 export default {
-  data() {
-    return {
-      uid: null,
-      username: "",
-      email: "",
-    };
+  props: {
+    user: {
+      type: Object,
+      default: () => {},
+    },
   },
   computed: {
     avatarSrc() {
-      const mailUrl = `/${md5(this.email).toString()}`;
-      return `https://www.gravatar.com/avatar${this.email ? mailUrl : '' }?s=128}`;
+      const { email } = this.user;
+      const mailUrl = `/${md5(email).toString()}`;
+      return `https://www.gravatar.com/avatar${email ? mailUrl : '' }?s=128`;
     },
   },
   methods: {
