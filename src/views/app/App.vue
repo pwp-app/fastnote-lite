@@ -8,6 +8,7 @@
           :currentCategory="currentCategory"
           />
         <UserPanel
+          :user="user"
           v-show="currentTab === 'user'"
           />
       </div>
@@ -66,6 +67,8 @@ export default {
       categories: [],
       categoryMap: {},
       currentCategory: null,
+      // user
+      user: {},
     };
   },
   computed: {
@@ -81,6 +84,9 @@ export default {
     },
   },
   async created() {
+    // 监听事件
+    this.listenEvents('on');
+    // 拉取数据
     const checkRet = await this.checkAuth();
     if (!checkRet) {
       return;
@@ -93,8 +99,10 @@ export default {
     if (!fetchCategoryRet) {
       this.$message.error("获取分类列表失败");
     }
-    // 监听事件
-    this.listenEvents('on');
+    const fetchUserInfoRet = await this.fetchUserInfo();
+    if (!fetchUserInfoRet) {
+      this.$message.error("获取用户信息失败");
+    }
   },
   beforeDestroy() {
     this.listenEvents('off');
@@ -203,6 +211,29 @@ export default {
         });
         resolve(true);
       });
+    },
+    async fetchUserInfo() {
+      try {
+        const res = await this.axios.get(`${this.API_BASE}/user/getInfo`, {
+          headers: {
+            Authorization: `Bearer ${this.$auth.authToken}`,
+          },
+        });
+        if (!res.data || !res.data.success) {
+          this.$message.error("获取用户信息失败");
+          return false;
+        }
+        const {
+          data: { id: uid, username, email },
+        } = res.data;
+        this.uid = uid;
+        this.username = username;
+        this.email = email;
+        return true;
+      } catch (err) {
+        this.$message.error("获取用户信息失败");
+        return false;
+      }
     },
     processNotes(data) {
       const { notes, noteMap, categoryMap } = this;

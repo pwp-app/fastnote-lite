@@ -5,6 +5,18 @@
       :key="note.id"
       :note="note"
       />
+    <ContextMenu
+      :show="showContextMenu"
+      :position="contextMenuPosition"
+      @close="handleContextMenuClose"
+      >
+      <div class="context-menu-item">
+        <span>复制内容</span>
+      </div>
+      <div class="context-menu-item">
+        <span>删除</span>
+      </div>
+    </ContextMenu>
   </div>
   <div class="note-list note-empty" v-else>
     <div class="note-empty-inner" v-if="!isCategory">
@@ -20,6 +32,7 @@
 
 <script>
 import Note from './Note';
+import ContextMenu from './ContextMenu';
 
 export default {
   props: {
@@ -28,6 +41,37 @@ export default {
   },
   components: {
     Note,
+    ContextMenu,
   },
+  data() {
+    return {
+      showContextMenu: false,
+      contextMenuPosition: {},
+      // selected
+      selectedNote: null,
+    };
+  },
+  created() {
+    this.listenEvents('on');
+  },
+  beforeDestroy() {
+    this.listenEvents('off');
+  },
+  methods: {
+    listenEvents(op) {
+      this.$bus[`\$${op}`]('note-context-open', this.handleContextOpen);
+    },
+    handleContextOpen(data) {
+      const { x, y, noteId } = data;
+      this.selectedNote = noteId;
+      this.showContextMenu = true;
+      this.contextMenuPosition = { x, y };
+    },
+    handleContextMenuClose() {
+      this.showContextMenu = false;
+      this.selectedNote = null;
+      this.$bus.$emit('note-context-close');
+    }
+  }
 }
 </script>

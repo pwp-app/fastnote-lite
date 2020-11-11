@@ -1,8 +1,11 @@
 <template>
   <div :class="{
     'note-wrapper': true,
-    'animated fadeInRight faster': note.isNew,
-    }">
+    'note-wrapper__selected': selected,
+    'animated fadeInLeft faster': note.isNew,
+    }"
+    @contextmenu.prevent="openMenu"
+    >
     <div
       :id="`note-${note.id}`"
       class="note"
@@ -39,6 +42,7 @@ export default {
   },
   data() {
     return {
+      selected: false,
       timeType: 'create',
     };
   },
@@ -65,7 +69,16 @@ export default {
       return text;
     },
   },
+  created() {
+    this.listenEvents('on');
+  },
+  beforeDestroy() {
+    this.listenEvents('off');
+  },
   methods: {
+    listenEvents(op) {
+      this.$bus[`\$${op}`]('note-context-close', this.handleContextClose);
+    },
     handleTimeClick() {
       if (!this.showTimePrefix) {
         return;
@@ -76,6 +89,17 @@ export default {
       }
       this.timeType = 'create';
     },
+    openMenu(e) {
+      this.$bus.$emit('note-context-open', {
+        x: e.pageX,
+        y: e.pageY,
+        noteId: this.note.id,
+      });
+      this.selected = true;
+    },
+    handleContextClose() {
+      this.selected = false;
+    }
   },
 }
 </script>

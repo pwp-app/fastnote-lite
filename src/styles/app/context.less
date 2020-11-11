@@ -1,0 +1,22 @@
+.context-menu {
+  position: fixed;
+  background: @color-secondary;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .125);
+  border-radius: 6px;
+  &-item {
+    padding: 12px 32px 12px 14px;
+    font-size: 14px;
+    letter-spacing: 0.05rem;
+    color: @color-text-regular;
+    user-select: none;
+  }
+  &-item:first-child {
+    border-radius: 6px 6px 0 0;
+  }
+  &-item:last-child {
+    border-radius: 0 0 6px 6px;
+  }
+  &-item:hover {
+    background: darken(@color-secondary, 3.75%);
+  }
+}

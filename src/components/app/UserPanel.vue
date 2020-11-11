@@ -25,9 +25,6 @@ export default {
       email: "",
     };
   },
-  async created() {
-    await this.getUserInfo();
-  },
   computed: {
     avatarSrc() {
       const mailUrl = `/${md5(this.email).toString()}`;
@@ -35,29 +32,6 @@ export default {
     },
   },
   methods: {
-    async getUserInfo() {
-      try {
-        const res = await this.axios.get(`${this.API_BASE}/user/getInfo`, {
-          headers: {
-            Authorization: `Bearer ${this.$auth.authToken}`,
-          },
-        });
-        if (!res.data || !res.data.success) {
-          this.$message.error("获取用户信息失败");
-          return false;
-        }
-        const {
-          data: { id: uid, username, email },
-        } = res.data;
-        this.uid = uid;
-        this.username = username;
-        this.email = email;
-        return true;
-      } catch (err) {
-        this.$message.error("获取用户信息失败");
-        return false;
-      }
-    },
     handleLogout() {
       this.$auth.authToken = null;
       this.$auth.refreshToken = null;
