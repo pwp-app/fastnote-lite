@@ -112,6 +112,8 @@ export default {
       this.$bus[`\$${op}`]('editor-collapse', this.editorCollapse);
       this.$bus[`\$${op}`]('editor-expand', this.editorExpand);
       this.$bus[`\$${op}`]('add-note', this.addNote);
+      this.$bus[`\$${op}`]('add-note', this.deleteNote);
+      this.$bus[`\$${op}`]('add-note', this.copyNote);
       this.$bus[`\$${op}`]('change-tab', this.changeTab);
     },
     // 数据
@@ -378,6 +380,14 @@ export default {
         return false;
       }
     },
+    async copyNote(data) {
+      const { noteId } = data;
+      if (this.noteMap[noteId]) {
+        const { text } = this.noteMap[noteId];
+      }
+      await navigator.clipboard.writeText(text);
+      this.$message.success('复制成功');
+    }
   },
 };
 </script>
