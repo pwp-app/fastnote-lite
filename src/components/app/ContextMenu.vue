@@ -24,7 +24,6 @@ export default {
   },
   methods: {
     handleShowChanged(show) {
-      console.log(show);
       if (show) {
         document.addEventListener('mousedown', this.handleHide);
         document.addEventListener('mousewheel', this.handleHide);

@@ -112,8 +112,8 @@ export default {
       this.$bus[`\$${op}`]('editor-collapse', this.editorCollapse);
       this.$bus[`\$${op}`]('editor-expand', this.editorExpand);
       this.$bus[`\$${op}`]('add-note', this.addNote);
-      this.$bus[`\$${op}`]('add-note', this.deleteNote);
-      this.$bus[`\$${op}`]('add-note', this.copyNote);
+      this.$bus[`\$${op}`]('copy-note', this.copyNote);
+      this.$bus[`\$${op}`]('delete-note', this.deleteNote);
       this.$bus[`\$${op}`]('change-tab', this.changeTab);
     },
     // 数据
@@ -244,6 +244,7 @@ export default {
           this.currentNoteId = noteId + 1;
         }
         const note = JSON.parse(pako.ungzip(content, { to: "string" }));
+        note.syncId = syncId;
         notes.push(note);
         noteMap[noteId] = note;
         noteMap[syncId] = note;
@@ -334,31 +335,51 @@ export default {
       }
       note = {
         ...note,
+        syncId: saveRes.syncId,
         isNew: true,
       };
       this.notes.unshift(note);
       this.noteMap[note.id] = note;
       const { category: noteCat } = note;
-      if (noteCat && noteCat !== 'notalloc') {
-        if (!this.categoryMap[noteCat]) {
-          this.categoryMap[noteCat] = [];
-        }
-        this.categoryMap[noteCat].unshift(note);
-        const idx = this.categories.findIndex(item => item.name === note.category);
-        const idx_all = this.categories.findIndex(item => item.name === 'all');
-        this.categories[idx].count += 1;
-        this.categories[idx_all].count += 1;
-        await this.saveCategories();
-      } else {
-        this.categoryMap['notalloc'].unshift(note);
-        const idx_all = this.categories.findIndex(item => item.name === 'all');
-        const idx_notalloc = this.categories.findIndex(item => item.name === 'notalloc');
-        this.categories[idx_all].count += 1;
-        this.categories[idx_notalloc].count += 1;
-        await this.saveCategories();
+      if (!this.categoryMap[noteCat]) {
+        this.categoryMap[noteCat] = [];
       }
+      const categoryName = noteCat || 'notalloc';
+      this.categoryMap[categoryName].unshift(note);
+      const idx = this.categories.findIndex(item => item.name === categoryName);
+      const idx_all = this.categories.findIndex(item => item.name === 'all');
+      this.categories[idx].count += 1;
+      this.categories[idx_all].count += 1;
+      await this.saveCategories();
       this.$bus.$emit('note-added', this.currentNoteId);
       this.currentNoteId += 1;
+    },
+    async removeNote(noteId, callback) {
+      const note = this.noteMap[noteId];
+      const { category, syncId } = note;
+      const categoryName = category || 'notalloc';
+      // 从分类Map移出
+      const categoryMapIdx = this.categoryMap[categoryName].findIndex(item => item.syncId === syncId);
+      this.categoryMap[categoryName].splice(categoryMapIdx, 1);
+      // 修改计数
+      const categoryIdx = this.categories.findIndex(item => item.name === categoryName);
+      const categroyAllIdx = this.categories.findIndex(item => item.name === 'all');
+      this.categories[categoryIdx].count -= 1;
+      this.categories[categroyAllIdx].count -= 1;
+      await this.saveCategories();
+      // 移除动画
+      const wrapper = document.getElementById(`note-wrapper-${noteId}`);
+      if (wrapper) {
+        wrapper.setAttribute('class', 'note-wrapper animated fadeOutLeft faster');
+      }
+      setTimeout(() => {
+        const idx = this.notes.findIndex(item => item.syncId === syncId);
+        this.notes.splice(idx, 1);
+        this.noteMap[noteId] = null;
+      }, 500);
+      if (typeof callback === 'function') {
+        callback();
+      }
     },
     async saveNote(note) {
       try {
@@ -374,7 +395,7 @@ export default {
         if (!res.data || !res.data.success) {
           return false;
         }
-        return true;
+        return res.data.data || null;
       } catch (err) {
         console.error('Save note error: ', err);
         return false;
@@ -382,12 +403,44 @@ export default {
     },
     async copyNote(data) {
       const { noteId } = data;
-      if (this.noteMap[noteId]) {
-        const { text } = this.noteMap[noteId];
+      const note = this.noteMap[noteId];
+      if (!note) {
+        this.$message.error('复制失败，无法获取便签内容');
+        return;
       }
+      const { text } = note;
       await navigator.clipboard.writeText(text);
       this.$message.success('复制成功');
-    }
+    },
+    async deleteNote(data) {
+      const { noteId } = data;
+      const note = this.noteMap[noteId];
+      if (!note) {
+        this.$message.error('删除失败，无法获取便签同步ID');
+        return;
+      }
+      const { syncId } = note;
+      try {
+        const res = await this.axios.post(`${this.API_BASE}/note/delete`, {
+          syncId,
+        }, {
+          headers: {
+            Authorization: `Bearer ${this.$auth.authToken}`,
+          },
+        });
+        const { success } = res.data;
+        if (!success) {
+          this.$message.error(res.data.success);
+          return;
+        }
+        this.removeNote(noteId, () => {
+          this.$message.success('删除成功');
+        });
+      } catch (err) {
+        this.$message.error('发生错误，删除失败');
+        console.error('Delete note failed: ', err);
+      }
+    },
   },
 };
 </script>

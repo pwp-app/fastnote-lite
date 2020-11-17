@@ -1,8 +1,10 @@
 <template>
-  <div :class="{
-    'note-wrapper': true,
-    'note-wrapper__selected': selected,
-    'animated fadeInLeft faster': note.isNew,
+  <div
+    :id="`note-wrapper-${note.id}`"
+    :class="{
+      'note-wrapper': true,
+      'note-wrapper__selected': selected,
+      'animated fadeInRight faster': note.isNew,
     }"
     @contextmenu.prevent="openMenu"
     >

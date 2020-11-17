@@ -10,10 +10,10 @@
       :position="contextMenuPosition"
       @close="handleContextMenuClose"
       >
-      <div class="context-menu-item" @click="handleCopy">
+      <div class="context-menu-item" @mousedown="handleCopy">
         <span>复制内容</span>
       </div>
-      <div class="context-menu-item" @click="handleDelete">
+      <div class="context-menu-item" @mousedown="handleDelete">
         <span>删除</span>
       </div>
     </ContextMenu>
@@ -74,10 +74,10 @@ export default {
     },
     // context events
     handleDelete() {
-      this.$emit('delete-note', { noteId: this.selectedNote });
+      this.$bus.$emit('delete-note', { noteId: this.selectedNote });
     },
-    async handleCopy() {
-      this.$emit('copy-note', { noteId: this.selectedNote });
+    handleCopy() {
+      this.$bus.$emit('copy-note', { noteId: this.selectedNote });
     },
   }
 }
