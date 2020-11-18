@@ -92,6 +92,7 @@ export default {
   async created() {
     // 监听事件
     this.listenEvents('on');
+    this.bindVisibilityChange('add');
     // 拉取数据
     const checkRet = await this.checkAuth();
     if (!checkRet) {
@@ -109,20 +110,25 @@ export default {
     if (!window.fastnote) {
       window.fastnote = {};
     }
-    window.fastnote.syncTimer = setInterval(() => {
-      this.doSync();
-    }, 5000);
+    this.startSyncTimer();
   },
   beforeDestroy() {
     this.listenEvents('off');
-  },
-  destroyed() {
-    if (window.fastnote.syncTimer) {
-      clearInterval(window.fastnote.syncTimer);
-    }
+    this.bindVisibilityChange('remove');
+    this.removeSyncTimer();
   },
   methods: {
     // 功能
+    visibilityChanged() {
+      if (document.visibilityState === 'visible') {
+        startSyncTimer();
+      } else {
+        removeSyncTimer();
+      }
+    },
+    bindVisibilityChange(op) {
+      document[`${op}EventListener`]('visibilitychange', )
+    },
     listenEvents(op) {
       this.$bus[`\$${op}`]('change-category', this.changeCategory);
       this.$bus[`\$${op}`]('add-category', this.addCategory);
@@ -132,6 +138,19 @@ export default {
       this.$bus[`\$${op}`]('copy-note', this.copyNote);
       this.$bus[`\$${op}`]('delete-note', this.deleteNote);
       this.$bus[`\$${op}`]('change-tab', this.changeTab);
+    },
+    // 定时任务
+    startSyncTimer() {
+      if (!window.fastnote.syncTime) {
+        window.fastnote.syncTimer = setInterval(() => {
+          this.doSync();
+        }, 5000);
+      }
+    },
+    removeSyncTimer() {
+      if (window.fastnote.syncTimer) {
+        clearInterval(window.fastnote.syncTimer);
+      }
     },
     // 数据
     async checkAuth() {
