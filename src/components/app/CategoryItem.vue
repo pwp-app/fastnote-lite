@@ -29,25 +29,22 @@ export default {
   },
   computed: {
     displayName() {
-      const { category } = this;
-      if (category.name === 'all') {
+      if (this.category.name === 'all') {
         return '所有便签';
       }
-      if (category.name === 'notalloc') {
+      if (this.category.name === 'notalloc') {
         return '未分配';
       }
-      return category.name;
+      return this.category.name;
     },
     displayCount() {
-      const { category } = this;
-      return category.count || 0;
+      return this.category.count || 0;
     },
     isSelected() {
-      const { category, currentCategory } = this;
-      if (category.name === 'all' && !currentCategory) {
+      if (this.category.name === 'all' && !this.currentCategory) {
         return true;
       }
-      return category.name === currentCategory;
+      return this.category.name === this.currentCategory;
     },
   },
   methods: {

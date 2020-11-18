@@ -19,8 +19,10 @@
     <div class="app-main">
       <div class="app-main-top">
         <NoteList
+          :identifier="listId"
           :notes="displayNotes"
           :isCategory="isCategory"
+          @load="fetchList"
           />
       </div>
       <div :class="{
@@ -56,28 +58,32 @@ export default {
     return {
       // aside
       currentTab: 'category',
+      // list
+      listId: 1,
       // note
       notes: [],
       noteMap: {},
       currentNoteId: 0,
-      page: 1,
-      pageSize: 20,
+      pageMap: {},
+      pageSize: 5,
       editorCollapsed: false,
       // category
       categories: [],
       categoryMap: {},
+      categoriesMap: {},
       currentCategory: null,
       // user
       user: {},
+      // sync
+      lastSyncTime: null,
     };
   },
   computed: {
     displayNotes() {
-      const { notes, currentCategory, categoryMap } = this;
-      if (currentCategory) {
-        return categoryMap[currentCategory] || [];
+      if (this.currentCategory) {
+        return this.categoryMap[this.currentCategory] || [];
       }
-      return notes;
+      return this.notes;
     },
     isCategory() {
       return this.currentCategory ? true : false;
@@ -91,15 +97,21 @@ export default {
     if (!checkRet) {
       return;
     }
-    const fetchNoteRet = await this.fetchList();
-    if (!fetchNoteRet) {
-      this.$message.error("获取便签列表失败");
-    }
+    await this.fetchList();
     const fetchCategoryRet = await this.fetchCategories();
     if (!fetchCategoryRet) {
       this.$message.error("获取分类列表失败");
     }
     this.fetchUserInfo();
+    // 设置最后一次同步的时间
+    this.lastSyncTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    // 设置timer
+    if (!window.fastnote) {
+      window.fastnote = {};
+    }
+    // window.fastnote.syncTimer = setInterval(() => {
+    //   this.doSync();
+    // }, 5000);
   },
   beforeDestroy() {
     this.listenEvents('off');
@@ -127,16 +139,15 @@ export default {
       }
       return true;
     },
-    fetchList() {
-      const { page, pageSize, currentCategory } = this;
+    fetchList(state) {
       return new Promise(async (resolve) => {
         let ret;
         try {
-          if (!currentCategory) {
+          if (!this.currentCategory) {
             ret = await this.axios.get(`${this.API_BASE}/note/list`, {
               params: {
-                page,
-                pageSize,
+                page: this.pageMap.all || 1,
+                pageSize: this.pageSize,
               },
               headers: {
                 Authorization: `Bearer ${this.$auth.authToken}`,
@@ -145,9 +156,9 @@ export default {
           } else {
             ret = await this.axios.get(`${this.API_BASE}/note/listByCat`, {
               params: {
-                page,
-                pageSize,
-                category: currentCategory,
+                page: this.pageMap[this.currentCategory] || 1,
+                pageSize: this.pageSize,
+                category: this.currentCategory,
               },
               headers: {
                 Authorization: `Bearer ${this.$auth.authToken}`,
@@ -156,13 +167,25 @@ export default {
           }
         } catch (err) {
           console.error("Fetch note list error: ", err);
+          this.$message.error('获取便签列表失败');
           return resolve(false);
         }
         if (!ret || !ret.data || !ret.data.success) {
+          this.$message.error('获取便签列表失败');
           return resolve(false);
         }
         const { data } = ret.data;
         this.processNotes(data);
+        if (!this.pageMap[this.currentCategory || 'all']) {
+          this.pageMap[this.currentCategory || 'all'] = 2;
+        } else {
+          this.pageMap[this.currentCategory || 'all'] += 1;
+        }
+        if ((!data || !data.length) && state) {
+          state.complete();
+          return resolve(true);
+        }
+        if (state) state.loaded();
         resolve(true);
       });
     },
@@ -187,27 +210,10 @@ export default {
           return resolve(false);
         }
         this.categories = JSON.parse(pako.ungzip(data.content, { to: 'string' }));
-        this.categories.sort((a, b) => {
-          if (a.name === 'all') {
-            return -1;
-          }
-          if (b.name === 'all') {
-            return 1;
-          }
-          if (a.name === 'all' && b.name === 'notalloc') {
-            return -1;
-          }
-          if (a.name === 'notalloc' && b.name === 'all') {
-            return 1;
-          }
-          if (a.name === 'notalloc') {
-            return -1;
-          }
-          if (b.name === 'notalloc') {
-            return 1;
-          }
-          return 0;
+        this.categories.forEach((cat) => {
+          this.categoriesMap[cat.name] = cat;
         });
+        this.sortCategories();
         resolve(true);
       });
     },
@@ -237,28 +243,66 @@ export default {
       }
     },
     processNotes(data) {
-      const { notes, noteMap, categoryMap } = this;
       data.forEach((item) => {
         const { noteId, syncId, content, category } = item;
+        if (this.noteMap[syncId]) {
+          return;
+        }
         if (noteId >= this.currentNoteId) {
           this.currentNoteId = noteId + 1;
         }
         const note = JSON.parse(pako.ungzip(content, { to: "string" }));
         note.syncId = syncId;
-        notes.push(note);
-        noteMap[noteId] = note;
-        noteMap[syncId] = note;
+        this.notes.push(note);
+        this.noteMap[noteId] = note;
+        this.noteMap[syncId] = note;
         const categoryName = category || 'notalloc';
-        if (!categoryMap[categoryName]) {
-          categoryMap[categoryName] = [];
+        if (!this.categoryMap[categoryName]) {
+          this.$set(this.categoryMap, categoryName, []);
         }
-        categoryMap[categoryName].push(note);
+        this.categoryMap[categoryName].push(note);
       });
+      this.sortNotes();
+      this.sortCategoryMap();
+    },
+    sortNotes() {
+      this.notes.sort((a, b) => {
+        return b.id - a.id;
+      });
+    },
+    sortCategories() {
+      this.categories.sort((a, b) => {
+        if (a.name === 'all') {
+          return -1;
+        }
+        if (b.name === 'all') {
+          return 1;
+        }
+        if (a.name === 'all' && b.name === 'notalloc') {
+          return -1;
+        }
+        if (a.name === 'notalloc' && b.name === 'all') {
+          return 1;
+        }
+        if (a.name === 'notalloc') {
+          return -1;
+        }
+        if (b.name === 'notalloc') {
+          return 1;
+        }
+        return 0;
+      });
+    },
+    sortCategoryMap(key) {
       // 排序
-      Object.keys(categoryMap).forEach((key) => {
-        categoryMap[key].sort((a, b) => {
-          return b.id - a.id;
+      if (!key) {
+        Object.keys(this.categoryMap).forEach((key) => {
+          this.sortCategoryMap(key);
         });
+        return;
+      }
+      this.categoryMap[key].sort((a, b) => {
+        return b.id - a.id;
       });
     },
     // 事件处理
@@ -266,8 +310,7 @@ export default {
       this.currentTab = tab;
     },
     async addCategory(category) {
-      const idx = this.categories.findIndex(item => item.name === category);
-      if (idx >= 0) {
+      if (this.categoriesMap[category]) {
         this.$message.error('该分类已存在');
         return;
       }
@@ -285,6 +328,7 @@ export default {
         return;
       }
       this.categories.push(newCategory);
+      this.categoriesMap[category] = newCategory;
       this.$bus.$emit('category-added');
     },
     async saveCategories(categories) {
@@ -306,9 +350,16 @@ export default {
     changeCategory(category) {
       if (category === 'all') {
         this.currentCategory = null;
-        return;
+      } else {
+        this.currentCategory = category;
       }
-      this.currentCategory = category;
+      if (this.notes.length !== this.categoriesMap.all.count) {
+        this.listId += 1;
+      }
+      // category first fetch
+      if (!this.categoryMap[this.currentCategory] || this.categoryMap[this.currentCategory].length < 1) {
+        this.fetchList();
+      }
     },
     editorCollapse() {
       this.editorCollapsed = true;
@@ -317,16 +368,16 @@ export default {
       this.editorCollapsed = false;
     },
     async addNote(text) {
-      const { currentCategory } = this;
+      const noteId = this.currentNoteId;
       let note = {
-        id: this.currentNoteId,
+        id: noteId,
         time: moment().format('YYYY年MM月DD日'),
         rawtime: moment().format('YYYYMMDDHHmmss'),
         text,
         offset: 0,
         forceTop: false,
         markdown: false,
-        category: !currentCategory || currentCategory === 'notalloc' ? null : currentCategory,
+        category: !this.currentCategory || this.currentCategory === 'notalloc' ? null : this.currentCategory,
       };
       const saveRes = await this.saveNote(note);
       if (!saveRes) {
@@ -336,23 +387,27 @@ export default {
       note = {
         ...note,
         syncId: saveRes.syncId,
-        isNew: true,
       };
       this.notes.unshift(note);
       this.noteMap[note.id] = note;
+      this.noteMap[saveRes.syncId] = note;
       const { category: noteCat } = note;
       if (!this.categoryMap[noteCat]) {
         this.categoryMap[noteCat] = [];
       }
-      const categoryName = noteCat || 'notalloc';
-      this.categoryMap[categoryName].unshift(note);
-      const idx = this.categories.findIndex(item => item.name === categoryName);
-      const idx_all = this.categories.findIndex(item => item.name === 'all');
-      this.categories[idx].count += 1;
-      this.categories[idx_all].count += 1;
+      this.categoryMap[noteCat].unshift(note);
+      this.categoriesMap.all.count += 1;
+      this.categoriesMap[noteCat].count += 1;
       await this.saveCategories();
-      this.$bus.$emit('note-added', this.currentNoteId);
+      this.$bus.$emit('note-added', noteId);
       this.currentNoteId += 1;
+      // anim
+      this.$nextTick(() => {
+        const wrapperEl = document.getElementById(`note-wrapper-${noteId}`);
+        if (wrapperEl) {
+          wrapperEl.setAttribute('class', `${wrapperEl.getAttribute('class')} animated fadeInRight faster`);
+        }
+      });
     },
     async removeNote(noteId, callback) {
       const note = this.noteMap[noteId];
@@ -362,21 +417,21 @@ export default {
       const categoryMapIdx = this.categoryMap[categoryName].findIndex(item => item.syncId === syncId);
       this.categoryMap[categoryName].splice(categoryMapIdx, 1);
       // 修改计数
-      const categoryIdx = this.categories.findIndex(item => item.name === categoryName);
-      const categroyAllIdx = this.categories.findIndex(item => item.name === 'all');
-      this.categories[categoryIdx].count -= 1;
-      this.categories[categroyAllIdx].count -= 1;
+      this.categoriesMapp[categoryName].count -= 1;
+      this.categoriesMap.all.count -= 1;
       await this.saveCategories();
       // 移除动画
       const wrapper = document.getElementById(`note-wrapper-${noteId}`);
       if (wrapper) {
         wrapper.setAttribute('class', 'note-wrapper animated fadeOutLeft faster');
       }
+      // 延迟移除
       setTimeout(() => {
         const idx = this.notes.findIndex(item => item.syncId === syncId);
         this.notes.splice(idx, 1);
-        this.noteMap[noteId] = null;
       }, 500);
+      this.noteMap[noteId] = null;
+      this.noteMap[syncId] = null;
       if (typeof callback === 'function') {
         callback();
       }
@@ -440,6 +495,45 @@ export default {
         this.$message.error('发生错误，删除失败');
         console.error('Delete note failed: ', err);
       }
+    },
+    async doSync() {
+      let res;
+        try {
+        res = await this.axios.get(`${this.API_BASE}/sync/diff`, {
+          params: {
+            lastSync: this.lastSyncTime,
+          },
+          headers: {
+            Authorization: `Bearer ${this.$auth.authToken}`,
+          },
+        });
+      } catch (err) {
+        console.error('Fetch diff data error: ', err);
+        return;
+      }
+      if (!res || !res.data || !res.data.success) {
+        return;
+      }
+      // 处理diff数据
+      const { updatedNotes, deletedNotes, categories } = res.data.data;
+      if (updatedNotes) {
+        this.processUpdated(updatedNotes);
+      }
+      if (deletedNotes) {
+        this.processDeleted(deletedNotes);
+      }
+      if (categories) {
+        this.processCategories(categories);
+      }
+    },
+    processUpdated(updated) {
+      
+    },
+    processDeleted(deleted) {
+
+    },
+    processCategories(categories) {
+
     },
   },
 };

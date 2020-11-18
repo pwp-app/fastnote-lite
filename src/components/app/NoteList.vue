@@ -17,6 +17,14 @@
         <span>删除</span>
       </div>
     </ContextMenu>
+    <infinite-loading
+      :identifier="identifier"
+      @infinite="handleLoad"
+      spinner="spiral"
+    >
+      <span slot="no-more" style="display: none !important"></span>
+      <span slot="no-results" style="display: none !important"></span>
+    </infinite-loading>
   </div>
   <div class="note-list note-empty" v-else>
     <div class="note-empty-inner" v-if="!isCategory">
@@ -37,7 +45,8 @@ import ContextMenu from './ContextMenu';
 export default {
   props: {
     notes: Array,
-    isCategory: Boolean
+    isCategory: Boolean,
+    identifier: Number,
   },
   components: {
     Note,
@@ -66,13 +75,18 @@ export default {
       this.selectedNote = noteId;
       this.showContextMenu = true;
       this.contextMenuPosition = { x, y };
+      window.fastnote.noteContextOpened = true;
     },
     handleContextMenuClose() {
       this.showContextMenu = false;
       this.selectedNote = null;
       this.$bus.$emit('note-context-close');
+      window.fastnote.noteContextOpened = false;
     },
     // context events
+    handleLoad(state) {
+      this.$emit('load', state);
+    },
     handleDelete() {
       this.$bus.$emit('delete-note', { noteId: this.selectedNote });
     },

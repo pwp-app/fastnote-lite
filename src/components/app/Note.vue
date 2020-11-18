@@ -4,7 +4,6 @@
     :class="{
       'note-wrapper': true,
       'note-wrapper__selected': selected,
-      'animated fadeInRight faster': note.isNew,
     }"
     @contextmenu.prevent="openMenu"
     >
@@ -66,8 +65,7 @@ export default {
       }
     },
     displayText() {
-      let { text } = this.note;
-      text = text.replace(/\r?\n/g, '<br>');
+      let text = this.note.text.replace(/\r?\n/g, '<br>');
       return text;
     },
   },
