@@ -65,7 +65,7 @@ export default {
       noteMap: {},
       currentNoteId: 0,
       pageMap: {},
-      pageSize: 5,
+      pageSize: 20,
       editorCollapsed: false,
       // category
       categories: [],
@@ -109,12 +109,17 @@ export default {
     if (!window.fastnote) {
       window.fastnote = {};
     }
-    // window.fastnote.syncTimer = setInterval(() => {
-    //   this.doSync();
-    // }, 5000);
+    window.fastnote.syncTimer = setInterval(() => {
+      this.doSync();
+    }, 5000);
   },
   beforeDestroy() {
     this.listenEvents('off');
+  },
+  destroyed() {
+    if (window.fastnote.syncTimer) {
+      clearInterval(window.fastnote.syncTimer);
+    }
   },
   methods: {
     // 功能
@@ -253,6 +258,7 @@ export default {
         }
         const note = JSON.parse(pako.ungzip(content, { to: "string" }));
         note.syncId = syncId;
+        note.needSync = false;
         this.notes.push(note);
         this.noteMap[noteId] = note;
         this.noteMap[syncId] = note;
@@ -388,19 +394,26 @@ export default {
         ...note,
         syncId: saveRes.syncId,
       };
+      // save是异步操作，noteId在这个时候可能会有变化，这个noteId有可能会被diff拉下来的新数据覆盖，产生冲突
+      // 这里做一个防冲突处理
+      if (noteId !== this.currentNoteId) {
+        note.id = this.currentNoteId;
+        note.needSync = true;
+      }
+      this.currentNoteId += 1;
+      // 加入到数组
       this.notes.unshift(note);
       this.noteMap[note.id] = note;
       this.noteMap[saveRes.syncId] = note;
       const { category: noteCat } = note;
       if (!this.categoryMap[noteCat]) {
-        this.categoryMap[noteCat] = [];
+        this.$set(this.categoryMap, noteCat, []);
       }
       this.categoryMap[noteCat].unshift(note);
       this.categoriesMap.all.count += 1;
       this.categoriesMap[noteCat].count += 1;
       await this.saveCategories();
       this.$bus.$emit('note-added', noteId);
-      this.currentNoteId += 1;
       // anim
       this.$nextTick(() => {
         const wrapperEl = document.getElementById(`note-wrapper-${noteId}`);
@@ -417,7 +430,7 @@ export default {
       const categoryMapIdx = this.categoryMap[categoryName].findIndex(item => item.syncId === syncId);
       this.categoryMap[categoryName].splice(categoryMapIdx, 1);
       // 修改计数
-      this.categoriesMapp[categoryName].count -= 1;
+      this.categoriesMap[categoryName].count -= 1;
       this.categoriesMap.all.count -= 1;
       await this.saveCategories();
       // 移除动画
@@ -516,24 +529,147 @@ export default {
       }
       // 处理diff数据
       const { updatedNotes, deletedNotes, categories } = res.data.data;
+      if (categories) {
+        // 优先处理便签分类
+        this.processCategories(categories);
+      }
       if (updatedNotes) {
         this.processUpdated(updatedNotes);
       }
       if (deletedNotes) {
         this.processDeleted(deletedNotes);
       }
-      if (categories) {
-        this.processCategories(categories);
+      // 处理需要重新同步回云端的数据
+      const needUpdate = this.collectNeedUpdate();
+      if (needUpdate && needUpdate.length > 0) {
+        try {
+          const updateRet = await this.axios.post(`${this.API_BASE}/sync/update`, {
+            notes: needUpdate,
+          }, {
+            headers: {
+              Authorization: `Bearer ${this.$auth.authToken}`,
+            },
+          });
+          if (!updateRet.data.success) {
+            console.error('Update notes to remote failed: ', updatedRet.data.message || 'unknown error');
+          }
+        } catch (err) {
+          console.error('Update notes to remote failed: ', err);
+        }
+      }
+    },
+    processCategories(data) {
+      const { content } = data;
+      const categories = JSON.parse(pako.ungzip(content, { to: 'string' }));
+      categories.forEach((category) => {
+        // 逐个检查存在
+        const { name } = category;
+        if (!this.categoriesMap[name]) {
+          // 当前这个分类不存在
+          this.categories.push(category);
+          this.categoriesMap[name] = category;
+          this.$set(this.categoryMap, name, []);
+        } else {
+          // 分类存在，直接覆盖相关信息
+          this.categoriesMap[name].count = category.count;
+        }
+      });
+      if (categories.length > 0) {
+        // 存在有效数据才处理排序
+        this.sortCategories();
       }
     },
     processUpdated(updated) {
-      
+      const categoriesNeedSort = [];
+      updated.forEach((item) => {
+        const { syncId } = item;
+        const note = JSON.parse(pako.ungzip(item.content, { to: 'string' }));
+        const { category } = note;
+        if (this.noteMap[syncId]) {
+          // 便签之前有存在过，考虑到noteId和分类可能变更，先找到原内容，将其移除
+          const idx = this.notes.findIndex(n => n.syncId === syncId);
+          if (idx >= 0) {
+          const stored = this.notes[idx];
+            this.notes.splice(idx, 1);
+          }
+          const catIdx = this.categoryMap[stored.category].findIndex(n => n.syncId === syncId);
+          if (catIdx >= 0) {
+            this.categoryMap[stored.category].splice(catIdx, 1);
+          }
+          // 重新加入
+          this.noteMap[syncId] = note;
+          this.noteMap[note.id] = note;
+          if (!this.categoryMap[note.id]) {
+            this.$set(this.categoryMap, category, []);
+          }
+          this.categoryMap[cateogry].unshift(note);
+          categoriesNeedSort.push(category);
+        } else {
+          // 便签不存在
+          // 检查noteId冲突
+          if (!this.noteMap[note.id]) {
+            this.noteMap[note.id] = note;
+            if (note.id > this.currentNoteId) {
+              this.currentNoteId = note.id + 1;
+            }
+          } else {
+            // noteId冲突，作为新便签加入
+            note.id = this.currentNoteId;
+            note.needSync = true;
+            this.currentNoteId += 1;
+          }
+          this.noteMap[syncId] = syncId;
+          this.notes.push(note);
+          if (!this.categoryMap[category]) {
+            this.$set(this.categoryMap, category, []);
+          }
+          this.categoryMap[category].unshift(note);
+        }
+      });
+      // 重新排序
+      if (updated.length > 0) {
+        this.sortNotes();
+        categoriesNeedSort.forEach((category) => {
+          this.sortCategoryMap(category);
+        });
+      }
     },
     processDeleted(deleted) {
-
+      // 从有序数据里删除数据，删除不变更categories，无需排序
+      deleted.forEach((item) => {
+        const { syncId } = item;
+        if (!this.noteMap[syncId]) {
+          // 便签已经不存在，忽略
+          return;
+        }
+        // 便签存在
+        const note = this.noteMap[syncId];
+        const idx = this.notes.findIndex(n => n.syncId === syncId);
+        const catIdx = this.categoryMap[note.category].findIndex(n => n.syncId === syncId);
+        // 数组移除
+        this.categoryMap[note.category].splice(catIdx, 1);
+        this.notes.splice(idx, 1);
+        // map移除
+        this.noteMap[syncId] = null;
+      });
     },
-    processCategories(categories) {
-
+    collectNeedUpdate() {
+      // 收集所有需要push到云端的便签
+      const items = [];
+      this.notes.forEach((item) => {
+        if (item.needSync) {
+          items.push({
+            noteId: item.id,
+            category: item.category,
+            syncId: item.syncId,
+            content: pako.gzip(JSON.stringify({
+              ...item,
+              needSync: false,
+            }, { to: 'string' })),
+          });
+        }
+      });
+      return items;
     },
   },
 };
