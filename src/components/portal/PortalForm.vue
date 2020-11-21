@@ -1,5 +1,8 @@
 <template>
-  <div class="portal-form">
+  <div :class="{
+    'portal-form': true,
+    'portal-form-register': type === 'register',
+  }">
     <el-form
       ref="loginForm"
       class="portal-form-body"

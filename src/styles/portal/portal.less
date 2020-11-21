@@ -1,9 +1,5 @@
-.landing-portal {
-  padding: 84px 120px;
-}
-
 .portal-disabled {
-  margin: 96px 0;
+  padding-top: 180px;
   &-logo {
     text-align: center;
     img {
@@ -21,7 +17,7 @@
 }
 
 .portal-autologin {
-  margin: 180px 0;
+  padding-top: 256px;
   &-icon {
     text-align: center;
     color: @color-primary;
@@ -40,6 +36,7 @@
 .portal-form {
   width: 640px;
   margin: 0 auto;
+  padding: 138px 0 36px 0;
   &-header {
     font-size: 24px;
     font-weight: 600;
@@ -75,5 +72,59 @@
   &-tip:hover {
     color: lighten(@color-primary, 12.5%);
     cursor: pointer;
+  }
+}
+
+.portal-form-register {
+  padding: 72px 0 48px 0;
+}
+
+@media(min-height: 1200px) {
+  .portal-disabled {
+    padding-top: 282px;
+    transform: scale(1.5);
+  }
+  .portal-autologin {
+    padding-top: 336px;
+    transform: scale(1.5);
+  }
+  .portal-form {
+    padding: 296px 0 36px 0;
+  }
+  .portal-form-register {
+    padding: 268px 0 36px 0;
+  }
+  .portal-form-body {
+    transform: scale(1.5);
+  }
+}
+
+@media(max-height: 900px) {
+  .portal-disabled {
+    padding-top: 106px;
+  }
+  .portal-form {
+    padding: 98px 0 36px 0;
+  }
+  .portal-form-register {
+    padding: 54px 0 48px 0;
+  }
+  .portal-autologin {
+    padding-top: 164px;
+  }
+}
+
+@media(max-height: 720px) {
+  .portal-disabled {
+    padding-top: 76px;
+  }
+  .portal-form {
+    padding: 64px 0 36px 0;
+  }
+  .portal-form-register {
+    padding: 28px 0 48px 0;
+  }
+  .portal-autologin {
+    padding-top: 128px;
   }
 }
