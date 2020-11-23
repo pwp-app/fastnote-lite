@@ -426,6 +426,7 @@ export default {
         this.categoriesMap[noteCat].count += 1;
       }
       await this.saveCategories();
+      this.lastSyncTime = moment().format('YYYY-MM-DD HH:mm:ss');
       this.$bus.$emit('note-added', noteId);
       // anim
       this.$nextTick(() => {
@@ -514,6 +515,7 @@ export default {
           this.$message.error(res.data.success);
           return;
         }
+        this.lastSyncTime = moment().format('YYYY-MM-DD HH:mm:ss');
         this.removeNote(noteId, () => {
           this.$message.success('删除成功');
         });
@@ -546,10 +548,10 @@ export default {
         // 优先处理便签分类
         this.processCategories(categories);
       }
-      if (updatedNotes) {
+      if (updatedNotes && Array.isArray(updatedNotes) && updatedNotes.length > 0) {
         this.processUpdated(updatedNotes);
       }
-      if (deletedNotes) {
+      if (deletedNotes && Array.isArray(deletedNotes) && deletedNotes.length > 0) {
         this.processDeleted(deletedNotes);
       }
       // 处理需要重新同步回云端的数据
@@ -570,6 +572,8 @@ export default {
           console.error('Update notes to remote failed: ', err);
         }
       }
+      // 更新最后同步时间
+      this.lastSyncTime = moment().format('YYYY-MM-DD HH:mm:ss');
     },
     processCategories(data) {
       const categories = JSON.parse(pako.ungzip(data, { to: 'string' }));
@@ -595,27 +599,37 @@ export default {
       const categoriesNeedSort = [];
       updated.forEach((item) => {
         const { syncId } = item;
+        // 解译
         const note = JSON.parse(pako.ungzip(item.content, { to: 'string' }));
         const { category } = note;
-        if (this.noteMap[syncId]) {
+        // 设置状态和syncId
+        note.needSync = false;
+        note.syncId = syncId;
+        // 便签可能是不存在的
+        const stored = this.noteMap[syncId];
+        if (stored) {
           // 便签之前有存在过，考虑到noteId和分类可能变更，先找到原内容，将其移除
           const idx = this.notes.findIndex(n => n.syncId === syncId);
           if (idx >= 0) {
-          const stored = this.notes[idx];
             this.notes.splice(idx, 1);
           }
-          const catIdx = this.categoryMap[stored.category].findIndex(n => n.syncId === syncId);
-          if (catIdx >= 0) {
-            this.categoryMap[stored.category].splice(catIdx, 1);
+          if (stored.category) {
+            const catIdx = this.categoryMap[stored.category].findIndex(n => n.syncId === syncId);
+            if (catIdx >= 0) {
+              this.categoryMap[stored.category].splice(catIdx, 1);
+            }
           }
           // 重新加入
           this.noteMap[syncId] = note;
           this.noteMap[note.id] = note;
-          if (!this.categoryMap[note.id]) {
-            this.$set(this.categoryMap, category, []);
+          this.notes.push(note);
+          if (note.category) {
+            if (!this.categoryMap[note.id]) {
+              this.$set(this.categoryMap, category, []);
+            }
+            this.categoryMap[cateogry].unshift(note);
+            categoriesNeedSort.push(category);
           }
-          this.categoryMap[cateogry].unshift(note);
-          categoriesNeedSort.push(category);
         } else {
           // 便签不存在
           // 检查noteId冲突
@@ -631,6 +645,7 @@ export default {
             this.currentNoteId += 1;
           }
           this.noteMap[syncId] = syncId;
+          this.noteMap[note.id] = note;
           this.notes.push(note);
           if (!this.categoryMap[category]) {
             this.$set(this.categoryMap, category, []);
@@ -639,14 +654,13 @@ export default {
         }
       });
       // 重新排序
-      if (updated.length > 0) {
-        this.sortNotes();
-        categoriesNeedSort.forEach((category) => {
-          this.sortCategoryMap(category);
-        });
-      }
+      this.sortNotes();
+      categoriesNeedSort.forEach((category) => {
+        this.sortCategoryMap(category);
+      });
     },
     processDeleted(deleted) {
+      console.log(deleted);
       // 从有序数据里删除数据，删除不变更categories，无需排序
       deleted.forEach((item) => {
         const { syncId } = item;
@@ -655,8 +669,9 @@ export default {
           return;
         }
         // 便签存在
-        const note = this.noteMap[syncId];
+        let note = this.noteMap[syncId];
         const idx = this.notes.findIndex(n => n.syncId === syncId);
+        console.log(idx);
         // 处理category
         const { category } = note;
         if (category) {
@@ -666,7 +681,9 @@ export default {
         // 数组移除
         this.notes.splice(idx, 1);
         // map移除
+        this.noteMap[note.id] = null;
         this.noteMap[syncId] = null;
+        note = null;
       });
     },
     collectNeedUpdate() {
