@@ -121,13 +121,13 @@ export default {
     // 功能
     visibilityChanged() {
       if (document.visibilityState === 'visible') {
-        startSyncTimer();
+        this.startSyncTimer();
       } else {
-        removeSyncTimer();
+        this.removeSyncTimer();
       }
     },
     bindVisibilityChange(op) {
-      document[`${op}EventListener`]('visibilitychange', )
+      document[`${op}EventListener`]('visibilitychange', this.visibilityChanged);
     },
     listenEvents(op) {
       this.$bus[`\$${op}`]('change-category', this.changeCategory);
@@ -425,12 +425,14 @@ export default {
       this.noteMap[note.id] = note;
       this.noteMap[saveRes.syncId] = note;
       const { category: noteCat } = note;
-      if (!this.categoryMap[noteCat]) {
-        this.$set(this.categoryMap, noteCat, []);
+      if (noteCat) {
+        if (!this.categoryMap[noteCat]) {
+          this.$set(this.categoryMap, noteCat, []);
+        }
+        this.categoryMap[noteCat].unshift(note);
+        this.categoriesMap.all.count += 1;
+        this.categoriesMap[noteCat].count += 1;
       }
-      this.categoryMap[noteCat].unshift(note);
-      this.categoriesMap.all.count += 1;
-      this.categoriesMap[noteCat].count += 1;
       await this.saveCategories();
       this.$bus.$emit('note-added', noteId);
       // anim
@@ -578,8 +580,7 @@ export default {
       }
     },
     processCategories(data) {
-      const { content } = data;
-      const categories = JSON.parse(pako.ungzip(content, { to: 'string' }));
+      const categories = JSON.parse(pako.ungzip(data, { to: 'string' }));
       categories.forEach((category) => {
         // 逐个检查存在
         const { name } = category;

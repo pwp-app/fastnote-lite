@@ -33,6 +33,7 @@
 
 <script>
 import moment from 'moment';
+import marked from 'marked';
 
 export default {
   props: {
@@ -65,7 +66,12 @@ export default {
       }
     },
     displayText() {
-      let text = this.note.text.replace(/\r?\n/g, '<br>');
+      let text;
+      if (!this.note.markdown) {
+        text = this.note.text.replace(/\r?\n/g, '<br>');
+      } else {
+        text = marked(this.note.text);
+      }
       return text;
     },
   },
