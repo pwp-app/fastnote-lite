@@ -92,7 +92,6 @@ export default {
   async created() {
     // 监听事件
     this.listenEvents('on');
-    this.bindVisibilityChange('add');
     // 拉取数据
     const checkRet = await this.checkAuth();
     if (!checkRet) {
@@ -114,21 +113,9 @@ export default {
   },
   beforeDestroy() {
     this.listenEvents('off');
-    this.bindVisibilityChange('remove');
     this.removeSyncTimer();
   },
   methods: {
-    // 功能
-    visibilityChanged() {
-      if (document.visibilityState === 'visible') {
-        this.startSyncTimer();
-      } else {
-        this.removeSyncTimer();
-      }
-    },
-    bindVisibilityChange(op) {
-      document[`${op}EventListener`]('visibilitychange', this.visibilityChanged);
-    },
     listenEvents(op) {
       this.$bus[`\$${op}`]('change-category', this.changeCategory);
       this.$bus[`\$${op}`]('add-category', this.addCategory);
@@ -141,6 +128,7 @@ export default {
     },
     // 定时任务
     startSyncTimer() {
+      this.doSync();
       if (!window.fastnote.syncTime) {
         window.fastnote.syncTimer = setInterval(() => {
           this.doSync();
@@ -394,6 +382,10 @@ export default {
     },
     async addNote(text) {
       const noteId = this.currentNoteId;
+      let category = null;
+      if (!this.currentCategory && this.currentCategory !== 'notalloc') {
+        category = this.currentCategory;
+      }
       let note = {
         id: noteId,
         time: moment().format('YYYY年MM月DD日'),
@@ -402,7 +394,7 @@ export default {
         offset: 0,
         forceTop: false,
         markdown: false,
-        category: !this.currentCategory || this.currentCategory === 'notalloc' ? null : this.currentCategory,
+        category,
       };
       const saveRes = await this.saveNote(note);
       if (!saveRes) {
@@ -549,7 +541,7 @@ export default {
         return;
       }
       // 处理diff数据
-      const { updatedNotes, deletedNotes, categories } = res.data.data;
+      const { notes: updatedNotes, deleted: deletedNotes, categories } = res.data.data;
       if (categories) {
         // 优先处理便签分类
         this.processCategories(categories);
@@ -665,9 +657,13 @@ export default {
         // 便签存在
         const note = this.noteMap[syncId];
         const idx = this.notes.findIndex(n => n.syncId === syncId);
-        const catIdx = this.categoryMap[note.category].findIndex(n => n.syncId === syncId);
+        // 处理category
+        const { category } = note;
+        if (category) {
+          const catIdx = this.categoryMap[category].findIndex(n => n.syncId === syncId);
+          this.categoryMap[category].splice(catIdx, 1);
+        }
         // 数组移除
-        this.categoryMap[note.category].splice(catIdx, 1);
         this.notes.splice(idx, 1);
         // map移除
         this.noteMap[syncId] = null;
