@@ -55,10 +55,6 @@ export default {
           name: '下载',
           section: 'download'
         },
-        {
-          name: '更新日志',
-          section: 'changelog'
-        },
 			],
 			loginButtonDisabled: false,
     }

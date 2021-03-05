@@ -21,11 +21,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "landing" */ '../views/landing/Download.vue'),
       },
       {
-        path: 'changelog',
-        name: 'landing.changelog',
-        component: () => import(/* webpackChunkName: "changelog" */ '../views/landing/UpdateLog.vue'),
-      },
-      {
         path: 'portal',
         name: 'landing.portal',
         component: () => import(/* webpackChunkName: "portal" */ '../views/landing/Portal.vue'),
