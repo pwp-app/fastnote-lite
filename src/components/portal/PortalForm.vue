@@ -291,9 +291,10 @@ export default {
           captcha: this.registerForm.captcha,
         });
       } catch (err) {
-        console.error('Submit send mail eror: ', err);
+        console.error('Submit send mail error: ', err);
         this.$message.error('提交发送请求时发生错误');
         this.$refs.sendButton.disabled = false;
+        this.refreshCaptcha('register');
         return;
       }
       const { data: ret } = res;

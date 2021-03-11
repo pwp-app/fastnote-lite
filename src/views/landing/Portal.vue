@@ -1,17 +1,27 @@
 <template>
   <section class="landing-main landing-portal">
-    <div class="landing-portal-wrapper" v-if="usable">
-      <PortalForm v-if="!autoLogin"/>
-      <div class="portal-autologin" v-else>
-        <div class="portal-autologin-icon">
+    <div class="landing-portal-wrapper">
+      <div class="portal-loading" v-if="pinging">
+        <div class="portal-loading-icon">
           <i class="el-icon-loading"></i>
         </div>
-        <div class="portal-autologin-text">
+        <div class="portal-loading-text">
+          <p>正在检查服务器状态...</p>
+        </div>
+      </div>
+    </div>
+    <div class="landing-portal-wrapper" v-if="usable">
+      <PortalForm v-if="!autoLogin"/>
+      <div class="portal-loading" v-else>
+        <div class="portal-loading-icon">
+          <i class="el-icon-loading"></i>
+        </div>
+        <div class="portal-loading-text">
           <p>正在自动登录中...</p>
         </div>
       </div>
     </div>
-    <div class="landing-portal-wrapper" v-else>
+    <div class="landing-portal-wrapper" v-if="!usable">
       <div class="portal-disabled">
         <div class="portal-disabled-logo">
           <img :src="logo">
@@ -37,11 +47,14 @@ export default {
     return {
       logo: require('@/assets/images/logo.png'),
       usable: false,
+      pinging: false,
       autoLogin: (this.$auth.authToken || this.$auth.refreshToken) ? true : false,
     };
   },
   async created() {
+    this.pinging = true;
     this.usable = await this.$pingCloud();
+    this.pinging = false;
     if (this.autoLogin && this.usable) {
       await this.tryAutoLogin();
     }
