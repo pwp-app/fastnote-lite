@@ -74,6 +74,7 @@
     user-select: none;
     -webkit-user-drag: none;
     box-sizing: border-box;
+    padding: 0 32px;
   }
   // desc part styles
   &-desc {
@@ -317,11 +318,11 @@
   }
 }
 
-// 适配高度 ~900px
-@media (max-height: 900px) {
+// 适配高度 ~840px
+@media (max-height: 840px) {
   .landing {
     &-desc {
-      padding-top: 16px;
+      padding-top: 28px;
       &-screenshot {
         margin-top: 72px;
       }
@@ -338,11 +339,11 @@
     &-desc {
       padding-top: 0;
       &-screenshot {
-        margin-top: 64px;
+        margin-top: 56px;
       }
     }
     &-download {
-      padding-top: 58px;
+      padding-top: 92px;
     }
     &-update {
       padding-top: 16px;
@@ -391,7 +392,7 @@
   }
 }
 
-@media (max-width: 1280px) and (min-height: 800px) {
+@media (max-width: 1280px) and (min-height: 840px) {
   .landing {
     &-desc {
       padding-top: 64px;

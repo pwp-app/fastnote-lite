@@ -1,5 +1,5 @@
 .portal-disabled {
-  padding-top: 180px;
+  padding-top: 196px;
   &-logo {
     text-align: center;
     img {
@@ -17,7 +17,7 @@
 }
 
 .portal-autologin {
-  padding-top: 256px;
+  padding-top: 272px;
   &-icon {
     text-align: center;
     color: @color-primary;
@@ -99,9 +99,15 @@
   }
 }
 
-@media(max-height: 900px) {
+@media(max-height: 880px) {
+  .portal-autologin {
+    padding-top: 240px;
+  }
+}
+
+@media(max-height: 840px) {
   .portal-disabled {
-    padding-top: 106px;
+    padding-top: 164px;
   }
   .portal-form {
     padding: 98px 0 36px 0;
@@ -110,13 +116,13 @@
     padding: 54px 0 48px 0;
   }
   .portal-autologin {
-    padding-top: 164px;
+    padding-top: 196px;
   }
 }
 
 @media(max-height: 720px) {
   .portal-disabled {
-    padding-top: 76px;
+    padding-top: 96px;
   }
   .portal-form {
     padding: 64px 0 36px 0;
@@ -125,6 +131,6 @@
     padding: 28px 0 48px 0;
   }
   .portal-autologin {
-    padding-top: 128px;
+    padding-top: 172px;
   }
 }
