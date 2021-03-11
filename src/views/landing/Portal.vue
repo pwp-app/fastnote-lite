@@ -1,7 +1,7 @@
 <template>
   <section class="landing-main landing-portal">
     <div class="landing-portal-wrapper" v-if="usable">
-      <PortalForm v-if="autoLogin"/>
+      <PortalForm v-if="!autoLogin"/>
       <div class="portal-autologin" v-else>
         <div class="portal-autologin-icon">
           <i class="el-icon-loading"></i>
