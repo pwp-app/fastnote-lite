@@ -78,7 +78,7 @@
   // desc part styles
   &-desc {
 		overflow-y: hidden;
-		padding-top: 16px;
+		padding-top: 48px;
     &-text {
       font-size: 36px;
       letter-spacing: 0.1em;
@@ -321,6 +321,7 @@
 @media (max-height: 900px) {
   .landing {
     &-desc {
+      padding-top: 16px;
       &-screenshot {
         margin-top: 72px;
       }
@@ -386,6 +387,14 @@
     }
     &-404 {
       transform: scale(1.075);
+    }
+  }
+}
+
+@media (max-width: 1280px) and (min-height: 800px) {
+  .landing {
+    &-desc {
+      padding-top: 64px;
     }
   }
 }
