@@ -660,7 +660,6 @@ export default {
       });
     },
     processDeleted(deleted) {
-      console.log(deleted);
       // 从有序数据里删除数据，删除不变更categories，无需排序
       deleted.forEach((item) => {
         const { syncId } = item;
@@ -671,7 +670,6 @@ export default {
         // 便签存在
         let note = this.noteMap[syncId];
         const idx = this.notes.findIndex(n => n.syncId === syncId);
-        console.log(idx);
         // 处理category
         const { category } = note;
         if (category) {
