@@ -87,7 +87,7 @@
 </template>
 
 <script>
-const downloadBase = "http://update.backrunner.top/fastnote";
+const downloadBase = "https://update.backrunner.top/fastnote";
 
 export default {
   name: "Landing.Download",
