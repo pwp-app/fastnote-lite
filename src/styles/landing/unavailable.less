@@ -1,0 +1,34 @@
+.landing-unavailable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &-wrapper {
+    width: max-content;
+    height: max-content;
+    transform: translateY(-50%);
+  }
+  &-logo {
+    width: max-content;
+    margin: 0 auto;
+    img {
+      width: 116px;
+    }
+  }
+  &-text {
+    text-align: center;
+    color: @color-primary;
+    font-size: 22px;
+    font-weight: 600;
+    margin-top: 8px;
+    p {
+      margin: 0;
+      line-height: 54px;
+    }
+  }
+  &-footer {
+    position: absolute;
+    bottom: 18px;
+    font-size: 12px;
+    color: @color-text-regular-light;
+  }
+}

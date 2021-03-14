@@ -71,8 +71,6 @@ export default {
       }).catch(() => {
         this.$store.commit('client/setStatus', 'failed');
       });
-    } else {
-      this.$store.commit('client/setStatus', 'unavaliable');
     }
   },
   mounted() {
@@ -82,7 +80,10 @@ export default {
 			this.loginButtonDisabled = true;
 			return;
 		}
-    document.getElementById(`nav-${name}`).setAttribute('class', 'nav-active');
+    const navEl = document.getElementById(`nav-${name}`);
+    if (navEl) {
+      navEl.setAttribute('class', 'nav-active');
+    }
   },
   methods: {
     handleNavClicked(e) {
