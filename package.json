@@ -11,7 +11,7 @@
   "dependencies": {
     "@pwp-app/better-element-ui": "^2.14.0-fix-1",
     "animate.css": "^3.7.2",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "core-js": "^3.7.0",
     "crypto-js": "^4.0.0",
     "element-ui": "^2.14.0",
