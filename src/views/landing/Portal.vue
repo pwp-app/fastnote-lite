@@ -10,7 +10,7 @@
         </div>
       </div>
     </div>
-    <div class="landing-portal-wrapper" v-if="usable">
+    <div class="landing-portal-wrapper" v-if="!pinging && usable">
       <PortalForm v-if="!autoLogin"/>
       <div class="portal-loading" v-else>
         <div class="portal-loading-icon">
@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-    <div class="landing-portal-wrapper" v-if="!usable">
+    <div class="landing-portal-wrapper" v-if="!pinging && !usable">
       <div class="portal-disabled">
         <div class="portal-disabled-logo">
           <img :src="logo">
