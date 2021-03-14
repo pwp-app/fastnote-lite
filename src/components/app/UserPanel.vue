@@ -27,7 +27,7 @@ export default {
   computed: {
     avatarSrc() {
       const mailUrl = `/${md5(this.user.email).toString()}`;
-      return `https://www.gravatar.com/avatar${this.user.email ? mailUrl : '' }?s=128`;
+      return `https://cdn.v2ex.com/gravatar/avatar${this.user.email ? mailUrl : '' }?s=128`;
     },
   },
   methods: {
