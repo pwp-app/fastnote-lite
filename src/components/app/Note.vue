@@ -9,9 +9,14 @@
     >
     <div
       :id="`note-${note.id}`"
-      class="note"
+      :class="{
+        'note': true,
+        'note-overheight': isOverHeight && !expanded,
+      }"
+      ref="note"
       :data-id="note.id"
       :data-category="note.category"
+      @dblclick="handleNoteDblClick"
       >
       <div class="note-header">
         <span class="note-no">#{{note.id}}</span>
@@ -24,8 +29,8 @@
           @click="handleTimeClick"
         >{{timePrefix}}{{displayTime}}</span>
       </div>
-      <div class="note-content">
-        <p class="note-text" v-html="displayText"></p>
+      <div class="note-content" :style="`max-height: ${maxHeight}px;`">
+        <p class="note-text" ref="text" v-html="displayText"></p>
       </div>
     </div>
   </div>
@@ -34,6 +39,8 @@
 <script>
 import moment from 'moment';
 import marked from 'marked';
+
+const HEIGHT_LIMIT = 240;
 
 export default {
   props: {
@@ -46,6 +53,9 @@ export default {
     return {
       selected: false,
       timeType: 'create',
+      isOverHeight: false,
+      expanded: false,
+      maxHeight: '100vh',
     };
   },
   computed: {
@@ -78,12 +88,16 @@ export default {
   created() {
     this.listenEvents('on');
   },
+  mounted() {
+    this.checkIsOverHeight();
+  },
   beforeDestroy() {
     this.listenEvents('off');
   },
   methods: {
     listenEvents(op) {
       this.$bus[`\$${op}`]('note-context-close', this.handleContextClose);
+      this.$bus[`\$${op}`]('window-resized', this.handleWindowResized);
     },
     handleTimeClick() {
       if (!this.showTimePrefix) {
@@ -103,8 +117,21 @@ export default {
       });
       this.selected = true;
     },
+    checkIsOverHeight() {
+      this.maxHeight = this.$refs.text.clientHeight;
+      this.isOverHeight = this.$refs.note.clientHeight > HEIGHT_LIMIT;
+    },
+    handleNoteDblClick() {
+      if (!this.isOverHeight) {
+        return;
+      }
+      this.expanded = !this.expanded;
+    },
     handleContextClose() {
       this.selected = false;
+    },
+    handleWindowResized() {
+      this.checkIsOverHeight();
     }
   },
 }

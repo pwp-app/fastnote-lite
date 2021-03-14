@@ -43,6 +43,7 @@ import UserPanel from '../../components/app/UserPanel';
 import SideTabs from "../../components/app/SideTabs";
 import moment from "moment";
 import pako from "pako";
+import { debounce } from 'lodash-es';
 import "font-awesome/css/font-awesome.min.css";
 
 export default {
@@ -92,6 +93,7 @@ export default {
   async created() {
     // 监听事件
     this.listenEvents('on');
+    window.addEventListener('resize', debounce(this.handleWindowResized, 100));
     // 拉取数据
     const checkRet = await this.checkAuth();
     if (!checkRet) {
@@ -702,6 +704,9 @@ export default {
       });
       return items;
     },
+    handleWindowResized() {
+      this.$bus.$emit('window-resized');
+    }
   },
 };
 </script>

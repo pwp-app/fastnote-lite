@@ -26,7 +26,7 @@ Vue.use(InfiniteLoading, {
 });
 
 // 设置API_BASE
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:7001' : 'https://api.note.pwp.app';
+const API_BASE = 'https://api.note.pwp.app';
 Vue.prototype.API_BASE = API_BASE;
 
 // 获取鉴权信息

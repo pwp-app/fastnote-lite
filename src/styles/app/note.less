@@ -83,6 +83,7 @@
       width: 100%;
       margin-top: 8px;
       margin-bottom: 5px;
+      transition: max-height 300ms ease;
       .note-text {
         h1, h2, h3, h4, h5 {
           margin: 0;
@@ -185,26 +186,25 @@
 }
 
 .note-overheight {
-  height: 250px;
-  padding-right: 12px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-
-.note-overheight::-webkit-scrollbar {
-  width: 5px;
-}
-
-.note-overheight::-webkit-scrollbar-track-piece {
-  background-color: @color-primary;
-  border-radius: 8px;
-}
-
-.note-overheight::-webkit-scrollbar-thumb {
-  border-radius: 9px;
-  background-color: @color-secondary;
-}
-
-.note-overheight::-webkit-scrollbar-button {
-  display: none;
+  .note-content {
+    max-height: 240px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding-right: 8px;
+  }
+  .note-content::-webkit-scrollbar {
+    width: 5px;
+  }
+  .note-content::-webkit-scrollbar-track-piece {
+    background-color: @color-primary;
+    border-radius: 8px;
+  }
+  .note-content::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: @color-secondary;
+  }
+  .note-content::-webkit-scrollbar-button {
+    display: none;
+  }
 }
