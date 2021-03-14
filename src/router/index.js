@@ -7,7 +7,6 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'landing',
     component: Landing,
     children: [
       {
@@ -26,9 +25,14 @@ const routes = [
         component: () => import(/* webpackChunkName: "portal" */ '../views/landing/Portal.vue'),
       },
       {
+        path: 'unavailable',
+        name: 'landing.unavailable',
+        component: () => import(/* webpackChunkName: "landing.error" */ '../views/landing/Unavailable.vue'),
+      },
+      {
         path: '404',
         name: '404',
-        component: () => import(/* webpackChunkName: "404" */ '../views/common/404.vue'),
+        component: () => import(/* webpackChunkName: "landing.error" */ '../views/common/404.vue'),
       },
     ],
   },
@@ -38,9 +42,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "lite" */ '../views/app/App.vue'),
   },
   {
-    path: '/mobile/unavaliable',
-    name: 'mobile.unavaliable',
-    component: () => import(/* webpackChunkName: "mobileLanding" */ '../views/mobile/Unavaliable.vue'),
+    path: '/mobile/landing',
+    name: 'mobile.landing',
+    component: () => import(/* webpackChunkName: "mobile-landing" */ '../views/mobile/Landing.vue'),
   },
   {
     path: '*',
