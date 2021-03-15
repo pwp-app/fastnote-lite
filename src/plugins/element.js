@@ -1,5 +1,19 @@
-import Vue from 'vue'
-import Element from 'element-ui'
-import './theme/index.css'
+import Vue from 'vue';
+import {
+  Avatar,
+  Button,
+  Row,
+  Col,
+  Form,
+  FormItem,
+  Input,
+} from 'element-ui';
+import './theme/index.css';
 
-Vue.use(Element)
+Vue.use(Button);
+Vue.use(Row);
+Vue.use(Col);
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(Input);
+Vue.use(Avatar);
