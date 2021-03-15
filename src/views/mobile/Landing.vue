@@ -9,7 +9,10 @@
     </div>
     <Note :note="virtualNote" />
     <div class="mobile-landing-go">
-      <el-button type="primary" round @click="goPortal" :disabled="loginButtonDisabled">点我立刻体验</el-button>
+      <el-button type="primary" round @click="goPortal">点我立刻体验</el-button>
+    </div>
+    <div class="mobile-landing-footer">
+      <span>Copyright &copy; 2021 pwp.app</span>
     </div>
   </div>
 </template>

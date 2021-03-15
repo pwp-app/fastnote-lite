@@ -24,7 +24,7 @@
       <footer class="landing-footer">
         <div class="landing-footer-container">
           <div class="landing-footer-copyright">
-            <span>Copyright &copy; 2020 pwp.app. All rights reserved.</span>
+            <span>Copyright &copy; 2021 pwp.app. All rights reserved.</span>
           </div>
           <div class="landing-footer-divide"></div>
           <div class="landing-footer-opensource" @click="openGitHub">
