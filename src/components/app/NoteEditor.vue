@@ -67,7 +67,7 @@ export default {
         });
       }, 500);
     },
-    handleNoteAdded(noteId) {
+    handleNoteAdded() {
       this.$message.success('便签已添加');
       this.text = '';
     }
