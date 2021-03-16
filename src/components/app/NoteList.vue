@@ -31,7 +31,7 @@
       <p>您还没有建立任何的便签</p>
       <p>在下方你可以快速创建便签</p>
     </div>
-    <div class="note-empty-inner" v-else>
+    <div class="note-empty-inner" v-if="isCategory">
       <p>当前分类下没有任何便签</p>
       <p>在下方你可以快速创建该分类的便签</p>
     </div>

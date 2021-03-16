@@ -222,11 +222,11 @@
     }
   }
   .note-list::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
     z-index: 10;
   }
   .note-list::-webkit-scrollbar-thumb {
-    border-radius: 9px;
+    border-radius: 6px;
     background-color: lightgray;
   }
   .note-list::-webkit-scrollbar-button {
@@ -234,5 +234,30 @@
   }
   .note-wrapper {
     padding: 8px;
+  }
+}
+
+.note-swipe__wrapper {
+  width: max-content;
+  display: flex;
+  height: 100%;
+  .note-swipe {
+    width: 80px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 15px;
+    letter-spacing: 0.05rem;
+  }
+  .note-swipe__top {
+    background: lighten(@color-primary, 10%);
+  }
+  .note-swipe__copy {
+    background: #67C23A;
+  }
+  .note-swipe__delete {
+    background: #F56C6C;
   }
 }

@@ -1,4 +1,48 @@
 <template>
+  <!-- Mobile -->
+  <van-swipe-cell v-if="isMobile">
+    <template #left>
+      <div class="note-swipe__wrapper">
+        <div class="note-swipe note-swipe__top" @click="handleForceTop">置顶</div>
+        <div class="note-swipe note-swipe__copy" @click="handleCopy">复制</div>
+      </div>
+    </template>
+    <div :id="`note-wrapper-${note.id}`" class="note-wrapper">
+      <div
+        :id="`note-${note.id}`"
+        :class="{
+          note: true,
+          'note-overheight': isOverHeight && !expanded,
+        }"
+        ref="note"
+        :data-id="note.id"
+        :data-category="note.category"
+        @dblclick="handleNoteDblClick"
+      >
+        <div class="note-header">
+          <span class="note-no">#{{ note.id }}</span>
+          <span class="note-title">{{ note.title }}</span>
+          <span
+            :class="{
+              'note-time': true,
+              'note-time__clickable': timePrefix ? true : false,
+            }"
+            @click="handleTimeClick"
+            >{{ timePrefix }}{{ displayTime }}</span
+          >
+        </div>
+        <div class="note-content" :style="`max-height: ${maxHeight}px;`">
+          <p class="note-text" ref="text" v-html="displayText"></p>
+        </div>
+      </div>
+    </div>
+    <template #right>
+      <div class="note-swipe__wrapper">
+        <div class="note-swipe note-swipe__delete" @click="handleDelete">删除</div>
+      </div>
+    </template>
+  </van-swipe-cell>
+  <!-- PC -->
   <div
     :id="`note-wrapper-${note.id}`"
     :class="{
@@ -6,28 +50,30 @@
       'note-wrapper__selected': selected,
     }"
     @contextmenu.prevent="openMenu"
-    >
+    v-else
+  >
     <div
       :id="`note-${note.id}`"
       :class="{
-        'note': true,
+        note: true,
         'note-overheight': isOverHeight && !expanded,
       }"
       ref="note"
       :data-id="note.id"
       :data-category="note.category"
       @dblclick="handleNoteDblClick"
-      >
+    >
       <div class="note-header">
-        <span class="note-no">#{{note.id}}</span>
-        <span class="note-title">{{note.title}}</span>
+        <span class="note-no">#{{ note.id }}</span>
+        <span class="note-title">{{ note.title }}</span>
         <span
           :class="{
             'note-time': true,
-            'note-time__clickable': timePrefix ? true: false,
+            'note-time__clickable': timePrefix ? true : false,
           }"
           @click="handleTimeClick"
-        >{{timePrefix}}{{displayTime}}</span>
+          >{{ timePrefix }}{{ displayTime }}</span
+        >
       </div>
       <div class="note-content" :style="`max-height: ${maxHeight}px;`">
         <p class="note-text" ref="text" v-html="displayText"></p>
@@ -37,9 +83,9 @@
 </template>
 
 <script>
-import moment from 'moment';
-import marked from 'marked';
-import escapeHtml from 'escape-html';
+import moment from "moment";
+import marked from "marked";
+import escapeHtml from "escape-html";
 
 const HEIGHT_LIMIT = 240;
 
@@ -53,10 +99,11 @@ export default {
   data() {
     return {
       selected: false,
-      timeType: 'create',
+      timeType: "create",
       isOverHeight: false,
       expanded: false,
-      maxHeight: '100vh',
+      maxHeight: "100vh",
+      isMobile: window.os.isMobile,
     };
   },
   computed: {
@@ -65,21 +112,25 @@ export default {
     },
     timePrefix() {
       if (!this.showTimePrefix) {
-        return '';
+        return "";
       }
-      return this.timeType === 'create' ? '创建：' : '更新：';
+      return this.timeType === "create" ? "创建：" : "更新：";
     },
     displayTime() {
-      if (this.timeType === 'create') {
-        return moment(this.note.rawtime, 'YYYYMMDDHHmmss').format('YYYY年MM月DD日 HH:mm:ss');
+      if (this.timeType === "create") {
+        return moment(this.note.rawtime, "YYYYMMDDHHmmss").format(
+          "YYYY年MM月DD日 HH:mm:ss"
+        );
       } else {
-        return moment(this.note.updaterawtime, 'YYYYMMDDHHmmss').format('YYYY年MM月DD日 HH:mm:ss');
+        return moment(this.note.updaterawtime, "YYYYMMDDHHmmss").format(
+          "YYYY年MM月DD日 HH:mm:ss"
+        );
       }
     },
     displayText() {
       let content;
       if (!this.note.markdown) {
-        content = escapeHtml(this.note.text).replace(/\r?\n/g, '<br/>');
+        content = escapeHtml(this.note.text).replace(/\r?\n/g, "<br/>");
       } else {
         content = marked(this.note.text, {
           gfm: true,
@@ -89,31 +140,31 @@ export default {
     },
   },
   created() {
-    this.listenEvents('on');
+    this.listenEvents("on");
   },
   mounted() {
     this.checkIsOverHeight();
   },
   beforeDestroy() {
-    this.listenEvents('off');
+    this.listenEvents("off");
   },
   methods: {
     listenEvents(op) {
-      this.$bus[`\$${op}`]('note-context-close', this.handleContextClose);
-      this.$bus[`\$${op}`]('window-resized', this.handleWindowResized);
+      this.$bus[`\$${op}`]("note-context-close", this.handleContextClose);
+      this.$bus[`\$${op}`]("window-resized", this.handleWindowResized);
     },
     handleTimeClick() {
       if (!this.showTimePrefix) {
         return;
       }
-      if (this.timeType === 'create') {
-        this.timeType = 'update';
+      if (this.timeType === "create") {
+        this.timeType = "update";
         return;
       }
-      this.timeType = 'create';
+      this.timeType = "create";
     },
     openMenu(e) {
-      this.$bus.$emit('note-context-open', {
+      this.$bus.$emit("note-context-open", {
         x: e.pageX,
         y: e.pageY,
         noteId: this.note.id,
@@ -135,7 +186,16 @@ export default {
     },
     handleWindowResized() {
       this.checkIsOverHeight();
-    }
+    },
+    handleForceTop() {
+      this.$bus.$emit('set-force-top', { noteId: this.note.id });
+    },
+    handleDelete() {
+      this.$bus.$emit('delete-note', { noteId: this.note.id });
+    },
+    handleCopy() {
+      this.$bus.$emit('copy-note', { noteId: this.note.id });
+    },
   },
-}
+};
 </script>
