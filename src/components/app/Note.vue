@@ -3,7 +3,6 @@
   <van-swipe-cell v-if="isMobile">
     <template #left>
       <div class="note-swipe__wrapper">
-        <div class="note-swipe note-swipe__top" @click="handleForceTop">置顶</div>
         <div class="note-swipe note-swipe__copy" @click="handleCopy">复制</div>
       </div>
     </template>
@@ -186,9 +185,6 @@ export default {
     },
     handleWindowResized() {
       this.checkIsOverHeight();
-    },
-    handleForceTop() {
-      this.$bus.$emit('set-force-top', { noteId: this.note.id });
     },
     handleDelete() {
       this.$bus.$emit('delete-note', { noteId: this.note.id });
