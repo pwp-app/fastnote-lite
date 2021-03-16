@@ -28,11 +28,17 @@
           @load="fetchList"
           />
       </div>
-      <div :class="{
-        'app-main-bottom': true,
-        'app-main-bottom__collapsed': editorCollapsed,
-        }">
+      <div
+        :class="{
+          'app-main-bottom': true,
+          'app-main-bottom__collapsed': editorCollapsed,
+        }"
+        v-if="!isMobile"
+        >
         <NoteEditor />
+      </div>
+      <div class="app-main-bottom-mobile" v-else>
+        <MobileNoteEditor />
       </div>
     </div>
   </div>
@@ -44,6 +50,7 @@ import NoteEditor from "../../components/app/NoteEditor";
 import CategoryList from "../../components/app/CategoryList";
 import UserPanel from '../../components/app/UserPanel';
 import SideTabs from "../../components/app/SideTabs";
+import MobileNoteEditor from '../../components/app/MobileNoteEditor';
 import moment from "moment";
 import pako from "pako";
 import { debounce } from 'lodash-es';
@@ -54,6 +61,7 @@ export default {
   components: {
     NoteList,
     NoteEditor,
+    MobileNoteEditor,
     CategoryList,
     UserPanel,
     SideTabs,
@@ -231,10 +239,7 @@ export default {
         if (!success) {
           return resolve(false);
         }
-        this.categories = JSON.parse(pako.ungzip(data.content, { to: 'string' }));
-        this.categories.forEach((cat) => {
-          this.categoriesMap[cat.name] = cat;
-        });
+        this.processCategories(data.content);
         this.sortCategories();
         resolve(true);
       });
@@ -391,6 +396,10 @@ export default {
       this.editorCollapsed = false;
     },
     async addNote(text) {
+      text = text.trim();
+      if (!text) {
+        this.$message.error('请输入便签的内容');
+      }
       const noteId = this.currentNoteId;
       let category = null;
       if (!this.currentCategory && this.currentCategory !== 'notalloc') {

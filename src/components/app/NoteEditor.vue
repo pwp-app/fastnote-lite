@@ -70,7 +70,7 @@ export default {
     handleNoteAdded() {
       this.$message.success('便签已添加');
       this.text = '';
-    }
+    },
   },
 }
 </script>
