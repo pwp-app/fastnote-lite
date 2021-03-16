@@ -7,6 +7,8 @@ import {
   Form,
   FormItem,
   Input,
+  Message,
+  MessageBox,
 } from 'element-ui';
 import './theme/index.css';
 
@@ -17,3 +19,9 @@ Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Input);
 Vue.use(Avatar);
+
+Vue.prototype.$message = Message;
+Vue.prototype.$msgbox = MessageBox;
+Vue.prototype.$alert = MessageBox.alert;
+Vue.prototype.$confirm = MessageBox.confirm;
+Vue.prototype.$prompt = MessageBox.prompt;

@@ -1,12 +1,16 @@
 <template>
-  <div :class="{
-    'portal-form': true,
-    'portal-form-register': type === 'register',
-  }">
+  <div
+    :class="{
+      'portal-form': true,
+      'portal-form-register': type === 'register',
+      'mobile-portal-form': isMobile,
+    }"
+  >
     <el-form
       ref="loginForm"
       class="portal-form-body"
       :model="loginForm"
+      :label-position="labelPosition"
       label-width="120px"
       v-show="showLoginForm"
       :rules="rules.login"
@@ -20,7 +24,11 @@
         <el-input v-model="loginForm.username"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input v-model="loginForm.password" @keyup.native.enter="submitLogin" type="password"></el-input>
+        <el-input
+          v-model="loginForm.password"
+          @keyup.native.enter="submitLogin"
+          type="password"
+        ></el-input>
       </el-form-item>
       <el-form-item label="验证码" prop="captcha" v-if="loginForm.needCaptcha">
         <el-input v-model="loginForm.captcha"></el-input>
@@ -31,7 +39,14 @@
       </el-form-item>
       <el-form-item class="portal-form-button">
         <div class="el-input">
-          <el-button type="primary" :disabled="registerForm.btnDisabled" @click="submitLogin">登录</el-button>
+          <el-button
+            type="primary"
+            round
+            :disabled="registerForm.btnDisabled"
+            @click="submitLogin"
+            >
+            登录
+          </el-button>
         </div>
       </el-form-item>
       <el-form-item>
@@ -43,6 +58,7 @@
     <el-form
       ref="registerForm"
       class="portal-form-body"
+      :label-position="labelPosition"
       :model="registerForm"
       label-width="120px"
       v-show="!showLoginForm"
@@ -68,20 +84,32 @@
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="registerForm.email"></el-input>
       </el-form-item>
-      <el-form-item label="验证码" prop="captcha">
+      <el-form-item label="验证码" prop="captcha" v-if="!isMobile">
         <el-input v-model="registerForm.captcha"></el-input>
         <img
           :src="registerForm.captchaSrc"
           @click.prevent="refreshCaptcha('register')"
         />
       </el-form-item>
-      <el-form-item label="邮箱验证码" prop="emailCaptcha">
+      <el-form-item label="邮箱验证码" prop="emailCaptcha" class="portal-email-captcha">
         <el-input v-model="registerForm.emailCaptcha"></el-input>
-        <CountButton ref="sendButton" text="发送" :count="60" @click="submitSendMail"/>
+        <CountButton
+          ref="sendButton"
+          text="发送"
+          :count="60"
+          @click="submitSendMail"
+        />
       </el-form-item>
       <el-form-item>
         <div class="el-input">
-          <el-button type="primary" :disabled="registerForm.btnDisabled" @click="submitRegister">注册</el-button>
+          <el-button
+            type="primary"
+            round
+            :disabled="registerForm.btnDisabled"
+            @click="submitRegister"
+            >
+            注册
+          </el-button>
         </div>
       </el-form-item>
       <el-form-item>
@@ -90,6 +118,24 @@
         </div>
       </el-form-item>
     </el-form>
+    <!-- mobile popup -->
+    <van-popup
+      class="portal-captcha-popup"
+      v-model="showRegisterCaptchaPopup"
+      position="bottom"
+      @close="handleRegisterCaptchaPopupClose"
+      :round="true"
+      >
+      <p>请输入验证码</p>
+      <div class="portal-captcha-form">
+        <el-input v-model="registerForm.captcha"></el-input>
+        <img
+          :src="registerForm.captchaSrc"
+          @click.prevent="refreshCaptcha('register')"
+          />
+      </div>
+      <el-button type="primary" round @click="registerCaptchaConfirm">确定</el-button>
+    </van-popup>
   </div>
 </template>
 
@@ -174,6 +220,7 @@ export default {
             { min: 6, message: '密码不能少于6个字符' },
           ],
           confirmPassword: [
+            { required: true, message: '请输入确认密码' },
             { validator: checkConfirmPassword },
           ],
           email: [
@@ -186,6 +233,8 @@ export default {
           ],
         },
       },
+      showLoginCatpchaPopup: false,
+      showRegisterCaptchaPopup: false,
     };
   },
   components: {
@@ -194,17 +243,37 @@ export default {
   computed: {
     headerTitle() {
       return this.type === "login"
-        ? "登录到 Fastnote Lite"
-        : "注册 Fastnote Cloud 帐户";
+        ? (window.os.isMobile ? "登录到 Fastnote" : "登录到 Fastnote Lite")
+        : (window.os.isMobile ? "注册 Fastnote 帐户" : "注册 Fastnote Cloud 帐户");
+    },
+    labelPosition() {
+      return this.isMobile ? 'top' : 'right';
     },
     showLoginForm() {
       return this.type === "login";
     },
+    isMobile() {
+      return window.os.isMobile;
+    }
+  },
+  created() {
+    const { type } = this.$route.query;
+    if (type) {
+      this.switchType(type);
+    }
   },
   methods: {
     switchType(type) {
+      if (type === this.type) {
+        return;
+      }
       this.type = type;
       this.refreshCaptcha(type);
+      this.$router.replace({
+        query: {
+          type,
+        },
+      });
     },
     async getCaptcha() {
       const res = await this.axios.get(`${this.API_BASE}/common/captcha`);
@@ -222,6 +291,7 @@ export default {
         return;
       }
       const { uuid, captcha: captchaImg } = captcha;
+      this[`${type}Form`].captcha = '';
       this[`${type}Form`].captchaId = uuid;
       this[`${type}Form`].captchaSrc = `data:image/png;base64,${captchaImg}`;
     },
@@ -283,6 +353,16 @@ export default {
       this.$router.push('/app');
     },
     async submitSendMail() {
+      if (!this.registerForm.email) {
+        this.$message.error('请先填写您的邮箱地址');
+        this.$refs.sendButton.clear();
+        return;
+      }
+      if (this.isMobile && !this.registerForm.captcha) {
+        this.showRegisterCaptchaPopup = true;
+        this.$refs.sendButton.clear();
+        return;
+      }
       let res;
       try {
         res = await this.axios.post(`${this.API_BASE}/user/sendMail`, {
@@ -293,7 +373,7 @@ export default {
       } catch (err) {
         console.error('Submit send mail error: ', err);
         this.$message.error('提交发送请求时发生错误');
-        this.$refs.sendButton.disabled = false;
+        this.$refs.sendButton.clear();
         this.refreshCaptcha('register');
         return;
       }
@@ -301,7 +381,7 @@ export default {
       const { success } = ret;
       if (!success) {
         this.$message.error(ret.message);
-        this.$refs.sendButton.disabled = false;
+        this.$refs.sendButton.clear();
         return;
       }
       // 发送成功
@@ -339,6 +419,18 @@ export default {
       this.$message.success('注册成功');
       this.switchType('login');
       this.loginForm.username = this.registerForm.username;
+    },
+    handleRegisterCaptchaPopupClose() {
+      this.$refs.sendButton.clear();
+    },
+    registerCaptchaConfirm() {
+      if (!this.registerForm.captcha) {
+        this.$message.error('请输入验证码');
+        return;
+      }
+      this.showRegisterCaptchaPopup = false;
+      this.refreshCaptcha('register');
+      this.submitSendMail();
     }
   },
 };

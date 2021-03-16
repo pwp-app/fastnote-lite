@@ -44,7 +44,12 @@ const routes = [
   {
     path: '/mobile/landing',
     name: 'mobile.landing',
-    component: () => import(/* webpackChunkName: "mobile-landing" */ '../views/mobile/Landing.vue'),
+    component: () => import(/* webpackChunkName: "mobile.landing" */ '../views/mobile/Landing.vue'),
+  },
+  {
+    path: '/mobile/portal',
+    name: 'mobile.portal',
+    component: () => import(/* webpackChunkName: "mobile.portal" */ '../views/mobile/Portal.vue'),
   },
   {
     path: '*',

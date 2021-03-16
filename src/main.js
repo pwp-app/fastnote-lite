@@ -1,19 +1,20 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
 import animated from 'animate.css';
 import VueAxios from 'vue-axios';
 import axios from 'axios';
 import moment from 'moment';
 import InfiniteLoading from 'vue-infinite-loading';
 import store from './store/index';
-import './styles/main.less'
-import './plugins/element.js'
+import './styles/main.less';
+import './plugins/element.js';
+import './plugins/vant.js';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
-axios.defaults.baseURL = ''
-axios.defaults.timeout = 5000
+axios.defaults.baseURL = '';
+axios.defaults.timeout = 5000;
 
 Vue.use(VueAxios, axios);
 Vue.use(animated);
@@ -38,10 +39,18 @@ const authData = {
 if (authStr) {
   const stored = JSON.parse(authStr);
   const { authToken, refreshToken, fetchTime } = stored;
-  if (moment(fetchTime, 'YYYYMMDDHHmmss').add(30, 'minute').valueOf() > moment().valueOf()) {
+  if (
+    moment(fetchTime, 'YYYYMMDDHHmmss')
+      .add(30, 'minute')
+      .valueOf() > moment().valueOf()
+  ) {
     authData.authToken = authToken;
   }
-  if (moment(fetchTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() > moment().valueOf()) {
+  if (
+    moment(fetchTime, 'YYYYMMDDHHmmss')
+      .add(14, 'days')
+      .valueOf() > moment().valueOf()
+  ) {
     authData.refreshToken = refreshToken;
   }
 }
@@ -107,7 +116,7 @@ Vue.prototype.$pingCloudAuth = async () => {
   try {
     const res = await axios.get(`${API_BASE}/common/ping/auth`, {
       headers: {
-        'Authorization': `Bearer ${authData.authToken}`,
+        Authorization: `Bearer ${authData.authToken}`,
       },
     });
     if (res.status !== 200 || !res.data || !res.data.success) {
@@ -125,5 +134,5 @@ Vue.prototype.$bus = new Vue();
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount('#app');

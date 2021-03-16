@@ -22,11 +22,11 @@ export default {
 	},
 	methods: {
 		handleClick() {
-			this.$emit('click');
 			this.disabled = true;
 			if (this.countAutoStart) {
 				this.startCount();
 			}
+			this.$emit('click');
 		},
 		startCount() {
 			this.currentCount = this.count;
@@ -41,7 +41,13 @@ export default {
 				this.currentCount -= 1;
 				this.displayText = this.currentCount;
 			}, 1000);
-		}
+		},
+		clear() {
+			if (this.countInterval) {
+				clearInterval(this.countInterval);
+			}
+			this.disabled = false;
+		},
 	}
 }
 </script>

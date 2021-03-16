@@ -23,8 +23,8 @@
     </div>
     <div class="landing-portal-wrapper" v-if="!pinging && !usable">
       <div class="portal-disabled">
-        <div class="portal-disabled-logo">
-          <img :src="logo">
+        <div class="portal-disabled-icon">
+          <i class="el-icon-close"></i>
         </div>
         <div class="portal-disabled-text">
           <p>非常抱歉</p>

@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     goPortal() {
-
+      this.$router.push('/mobile/portal');
     },
   },
 }

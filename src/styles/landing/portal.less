@@ -1,9 +1,10 @@
 .portal-disabled {
-  padding-top: 196px;
-  &-logo {
+  padding-top: 248px;
+  &-icon {
     text-align: center;
-    img {
-      width: 112px;
+    i {
+      font-size: 72px;
+      color: @color-primary;
     }
   }
   &-text {
@@ -100,6 +101,9 @@
 }
 
 @media(max-height: 880px) {
+  .portal-disabled {
+    padding-top: 220px;
+  }
   .portal-loading {
     padding-top: 240px;
   }
@@ -107,7 +111,7 @@
 
 @media(max-height: 840px) {
   .portal-disabled {
-    padding-top: 164px;
+    padding-top: 180px;
   }
   .portal-form {
     padding: 98px 0 36px 0;
@@ -120,9 +124,15 @@
   }
 }
 
+@media(max-height: 780px) {
+  .portal-disabled {
+    padding-top: 168px;
+  }
+}
+
 @media(max-height: 720px) {
   .portal-disabled {
-    padding-top: 96px;
+    padding-top: 108px;
   }
   .portal-form {
     padding: 64px 0 36px 0;

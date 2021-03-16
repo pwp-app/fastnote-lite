@@ -1,6 +1,6 @@
 {
   "name": "fastnote-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "start": "npm run serve",
@@ -19,6 +19,7 @@
     "marked": "^2.0.1",
     "moment": "^2.29.1",
     "pako": "^1.0.11",
+    "vant": "^2.12.9",
     "vue": "^2.6.12",
     "vue-axios": "^3.2.4",
     "vue-infinite-loading": "^2.4.5",
@@ -30,6 +31,8 @@
     "@vue/cli-plugin-router": "^4.5.11",
     "@vue/cli-plugin-vuex": "^4.5.11",
     "@vue/cli-service": "^4.5.11",
+    "babel-plugin-component": "^1.1.1",
+    "babel-plugin-import": "^1.13.3",
     "less": "^3.12.2",
     "less-loader": "^7.0.2",
     "vue-cli-plugin-element": "^1.0.1",
