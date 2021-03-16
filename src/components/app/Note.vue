@@ -71,8 +71,9 @@
             'note-time__clickable': timePrefix ? true : false,
           }"
           @click="handleTimeClick"
-          >{{ timePrefix }}{{ displayTime }}</span
-        >
+          >
+            {{ timePrefix }}{{ displayTime }}
+          </span>
       </div>
       <div class="note-content" :style="`max-height: ${maxHeight}px;`">
         <p class="note-text" ref="text" v-html="displayText"></p>
@@ -85,6 +86,7 @@
 import moment from "moment";
 import marked from "marked";
 import escapeHtml from "escape-html";
+import { Dialog } from 'vant';
 
 const HEIGHT_LIMIT = 240;
 
@@ -187,7 +189,12 @@ export default {
       this.checkIsOverHeight();
     },
     handleDelete() {
-      this.$bus.$emit('delete-note', { noteId: this.note.id });
+      Dialog.confirm({
+        title: '确认要删除吗？',
+        message: `确定要删除 #${this.note.id}${this.note.title ? ` ${this.note.title}` : ''} 吗？`,
+      }).then(() => {
+        this.$bus.$emit('delete-note', { noteId: this.note.id });
+      }).catch(() => {});
     },
     handleCopy() {
       this.$bus.$emit('copy-note', { noteId: this.note.id });
