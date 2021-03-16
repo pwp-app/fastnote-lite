@@ -1,5 +1,5 @@
 <template>
-  <div class="note-list" v-if="notes.length > 0">
+  <div class="note-list" v-if="showList">
     <Note
       v-for="note in notes"
       :key="note.id"
@@ -65,6 +65,11 @@ export default {
   },
   beforeDestroy() {
     this.listenEvents('off');
+  },
+  computed: {
+    showList() {
+      return this.notes.length > 0;
+    },
   },
   methods: {
     listenEvents(op) {

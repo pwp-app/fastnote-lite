@@ -39,6 +39,7 @@
 <script>
 import moment from 'moment';
 import marked from 'marked';
+import escapeHtml from 'escape-html';
 
 const HEIGHT_LIMIT = 240;
 
@@ -76,13 +77,15 @@ export default {
       }
     },
     displayText() {
-      let text;
+      let content;
       if (!this.note.markdown) {
-        text = this.note.text.replace(/\r?\n/g, '<br>');
+        content = escapeHtml(this.note.text).replace(/\r?\n/g, '<br/>');
       } else {
-        text = marked(this.note.text);
+        content = marked(this.note.text, {
+          gfm: true,
+        });
       }
-      return text;
+      return content;
     },
   },
   created() {

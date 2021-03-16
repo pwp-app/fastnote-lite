@@ -235,6 +235,7 @@ export default {
       },
       showLoginCatpchaPopup: false,
       showRegisterCaptchaPopup: false,
+      isMobile: window.os.isMobile,
     };
   },
   components: {
@@ -252,9 +253,6 @@ export default {
     showLoginForm() {
       return this.type === "login";
     },
-    isMobile() {
-      return window.os.isMobile;
-    }
   },
   created() {
     const { type } = this.$route.query;

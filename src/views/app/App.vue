@@ -1,6 +1,9 @@
 <template>
-  <div class="app">
-    <div class="app-aside">
+  <div :class="{
+      'app': true,
+      'app-mobile': isMobile,
+    }">
+    <div class="app-aside" v-if="!isMobile">
       <div class="app-aside-content">
         <CategoryList
           v-show="currentTab === 'category'"
@@ -77,6 +80,8 @@ export default {
       user: {},
       // sync
       lastSyncTime: null,
+      // mobile
+      isMobile: window.os.isMobile,
     };
   },
   computed: {
@@ -131,6 +136,9 @@ export default {
     // 定时任务
     startSyncTimer() {
       this.doSync();
+      if (!window.fastnote) {
+        window.fastnote = {};
+      }
       if (!window.fastnote.syncTime) {
         window.fastnote.syncTimer = setInterval(() => {
           this.doSync();
@@ -138,7 +146,7 @@ export default {
       }
     },
     removeSyncTimer() {
-      if (window.fastnote.syncTimer) {
+      if (window.fastnote?.syncTimer) {
         clearInterval(window.fastnote.syncTimer);
       }
     },

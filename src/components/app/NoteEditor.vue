@@ -8,7 +8,7 @@
     </div>
     <div class="note-editor-main">
       <textarea id="zone" v-model="text" @keydown="handleKeyDown"></textarea>
-      <label>使用[Ctrl+回车]提交</label>
+      <label>使用 Ctrl+回车 提交</label>
     </div>
   </div>
   <div class="note-editor-collapsed" v-else>

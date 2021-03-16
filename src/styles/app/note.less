@@ -49,7 +49,7 @@
 }
 
 .note-wrapper {
-  padding: 8px 24px;
+  padding: 8px 16px;
   .note {
     color: @color-note-text;
     background-color: @color-note-background;
@@ -206,5 +206,33 @@
   }
   .note-content::-webkit-scrollbar-button {
     display: none;
+  }
+}
+
+.app-mobile {
+  .note-list {
+    padding: 4px;
+  }
+  .note-empty {
+    .note-empty-inner {
+      p {
+        margin: 12px 0;
+        font-size: 20px;
+      }
+    }
+  }
+  .note-list::-webkit-scrollbar {
+    width: 4px;
+    z-index: 10;
+  }
+  .note-list::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: lightgray;
+  }
+  .note-list::-webkit-scrollbar-button {
+    display: none;
+  }
+  .note-wrapper {
+    padding: 8px;
   }
 }

@@ -23,13 +23,17 @@
     }
   }
   &-main {
-    flex: 1;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
     display: flex;
     flex-direction: column;
+    flex-wrap: nowrap;
     &-top {
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
       flex: 1;
-      height: calc(100vh - @editor-height);
     }
     &-bottom {
       position: relative;
@@ -40,6 +44,17 @@
       height: 48px;
     }
   }
+}
+
+.app-mobile {
+  .app-main {
+    width: 100vw;
+  }
+}
+
+.loading-spiral {
+  border: 2px solid @color-primary !important;
+  border-right-color: transparent !important;
 }
 
 // components
