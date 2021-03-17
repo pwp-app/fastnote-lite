@@ -54,6 +54,28 @@
 .app-mobile {
   .app-main {
     width: 100vw;
+    .app-main-nav {
+      height: 48px;
+      background: #fdfdfd;
+      padding-top: env(safe-area-inset-top, 0px);
+      position: relative;
+      .nav-menu {
+        position: absolute;
+        left: 0;
+        line-height: 48px;
+        padding-left: 10px;
+        font-size: 22px;
+        color: @color-primary;
+      }
+      .nav-title {
+        line-height: 48px;
+        text-align: center;
+        font-size: 16px;
+        letter-spacing: 0.05rem;
+        margin: 0 auto;
+        color: @color-text-regular;
+      }
+    }
   }
 }
 

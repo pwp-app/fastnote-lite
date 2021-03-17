@@ -20,6 +20,7 @@
         />
     </div>
     <div class="app-main">
+      <MobileNav :title="mobileNavTitle" />
       <div class="app-main-top app-main-loading" v-if="fetching">
         <van-loading size="24px" vertical color="#1faeff">
           正在获取数据...
@@ -55,6 +56,7 @@ import NoteEditor from "../../components/app/NoteEditor";
 import CategoryList from "../../components/app/CategoryList";
 import UserPanel from '../../components/app/UserPanel';
 import SideTabs from "../../components/app/SideTabs";
+import MobileNav from '../../components/app/MobileNav';
 import MobileNoteEditor from '../../components/app/MobileNoteEditor';
 import moment from "moment";
 import pako from "pako";
@@ -66,6 +68,7 @@ export default {
   components: {
     NoteList,
     NoteEditor,
+    MobileNav,
     MobileNoteEditor,
     CategoryList,
     UserPanel,
@@ -107,6 +110,15 @@ export default {
     },
     isCategory() {
       return this.currentCategory ? true : false;
+    },
+    mobileNavTitle() {
+      let category = this.currentCategory || 'all';
+      if (category === 'all') {
+        category = '所有便签';
+      } else if (category === 'notalloc') {
+        category = '未分类';
+      }
+      return this.fetching ? '数据获取中' : category;
     },
   },
   async created() {
