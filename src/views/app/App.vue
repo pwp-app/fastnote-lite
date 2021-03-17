@@ -20,7 +20,12 @@
         />
     </div>
     <div class="app-main">
-      <div class="app-main-top">
+      <div class="app-main-top app-main-loading" v-if="fetching">
+        <van-loading size="24px" vertical color="#1faeff">
+          正在获取数据...
+        </van-loading>
+      </div>
+      <div class="app-main-top" v-if="!fetching">
         <NoteList
           :identifier="listId"
           :notes="displayNotes"
@@ -72,6 +77,7 @@ export default {
       currentTab: 'category',
       // list
       listId: 1,
+      fetching: false,
       // note
       notes: [],
       noteMap: {},
@@ -112,12 +118,14 @@ export default {
     if (!checkRet) {
       return;
     }
+    this.fetching = true;
     await this.fetchList();
     const fetchCategoryRet = await this.fetchCategories();
     if (!fetchCategoryRet) {
       this.$message.error("获取分类列表失败");
     }
     this.fetchUserInfo();
+    this.fetching = false;
     // 设置最后一次同步的时间
     this.lastSyncTime = moment().format('YYYY-MM-DD HH:mm:ss');
     // 设置timer
