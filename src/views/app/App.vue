@@ -17,7 +17,7 @@
       <SideTabs :currentTab="currentTab" />
     </div>
     <div class="app-main">
-      <MobileNav :title="mobileNavTitle" />
+      <MobileNav :title="mobileNavTitle" v-if="isMobile" />
       <div class="app-main-top app-main-loading" v-if="fetching">
         <van-loading size="24px" vertical color="#1faeff">
           正在获取数据...
@@ -127,10 +127,6 @@ export default {
   computed: {
     displayNotes() {
       if (this.currentCategory && this.currentCategory !== "all") {
-        console.log(
-          this.currentCategory,
-          this.categoryMap[this.currentCategory]
-        );
         return this.categoryMap[this.currentCategory] || [];
       }
       return this.notes;
@@ -233,7 +229,6 @@ export default {
               },
             });
           } else {
-            console.log("page", this.pageMap[this.currentCategory] || 1);
             ret = await this.axios.get(`${this.API_BASE}/note/listByCat`, {
               params: {
                 page: this.pageMap[this.currentCategory] || 1,
@@ -340,7 +335,6 @@ export default {
         if (!this.categoryMap[categoryName]) {
           this.$set(this.categoryMap, categoryName, []);
         }
-        console.log(noteId, categoryName, this.categoryMap);
         this.categoryMap[categoryName].push(note);
       });
       this.sortNotes();

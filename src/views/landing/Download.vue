@@ -102,7 +102,6 @@ export default {
   },
   computed: {
     versionStatus() {
-      console.log(this.$store.state.client.status);
       return this.$store.state.client.status;
     },
     versionText() {
