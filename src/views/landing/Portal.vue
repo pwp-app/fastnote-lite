@@ -90,7 +90,7 @@ export default {
       }
       // 兜底
       this.autoLogin = false;
-    }
+    },
   },
 }
 </script>

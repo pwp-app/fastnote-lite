@@ -7,7 +7,7 @@
     <div class="mobile-landing-desc">
       <span>全新交互，高效体验</span>
     </div>
-    <Note :note="virtualNote" />
+    <Note :note="virtualNote" :isDemo="true" />
     <div class="mobile-landing-go">
       <el-button type="primary" round @click="goPortal">点我立刻体验</el-button>
     </div>
