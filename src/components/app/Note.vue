@@ -1,6 +1,6 @@
 <template>
   <!-- Mobile -->
-  <van-swipe-cell v-if="isMobile">
+  <van-swipe-cell v-if="isMobile && !isDemo">
     <template #left>
       <div class="note-swipe__wrapper">
         <div class="note-swipe note-swipe__copy" @click="handleCopy">复制</div>
@@ -95,6 +95,10 @@ export default {
     note: {
       type: Object,
       default: null,
+    },
+    isDemo: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
