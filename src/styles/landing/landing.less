@@ -80,6 +80,7 @@
   &-desc {
 		overflow-y: hidden;
 		padding-top: 48px;
+    transition: padding 100ms ease;
     &-text {
       font-size: 36px;
       letter-spacing: 0.1em;
@@ -338,6 +339,15 @@
     }
     &-download {
       padding-top: 96px;
+    }
+  }
+}
+
+// 适配高度 ~840px
+@media (max-height: 780px) {
+  .landing {
+    &-desc {
+      padding-top: 8px;
     }
   }
 }
