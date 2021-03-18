@@ -3,15 +3,15 @@
   <van-swipe-cell v-if="isMobile && !isDemo">
     <template #left>
       <div class="note-swipe__wrapper">
-        <div class="note-swipe note-swipe__copy" @click="handleCopy">复制</div>
+        <div class="note-swipe note-swipe__copy" v-if="showSwipe" @click="handleCopy">复制</div>
       </div>
     </template>
     <div :id="`note-wrapper-${note.id}`" class="note-wrapper">
-      <NoteContent :note="note" />
+      <NoteContent :note="note" @decrypted="handleDecrypted" />
     </div>
     <template #right>
       <div class="note-swipe__wrapper">
-        <div class="note-swipe note-swipe__delete" @click="handleDelete">删除</div>
+        <div class="note-swipe note-swipe__delete" v-if="showSwipe" @click="handleDelete">删除</div>
       </div>
     </template>
   </van-swipe-cell>
@@ -25,7 +25,7 @@
     @contextmenu.prevent="openMenu"
     v-else
   >
-    <NoteContent :note="note" />
+    <NoteContent ref="content" :note="note" />
   </div>
 </template>
 
@@ -52,6 +52,7 @@ export default {
     return {
       selected: false,
       isMobile: window.os.isMobile,
+      showSwipe: !this.note.password ? true : false,
     };
   },
   created() {
@@ -85,6 +86,10 @@ export default {
     },
     handleCopy() {
       this.$bus.$emit('copy-note', { noteId: this.note.id });
+    },
+    handleDecrypted() {
+      this.showSwipe = true;
+      this.$forceUpdate();
     },
   },
 };

@@ -1,8 +1,7 @@
 <template>
   <div class="note-pass">
-    <span style="font-size: 15px;">【该便签已加密，Fastnote Lite 暂时不支持加密便签】</span>
-    <!-- <el-input v-model="password" />
-    <el-button type="primary" size="small" round>解锁</el-button> -->
+    <el-input v-model="password" type="password" size="small" />
+    <el-button size="small" round @click="handleUnlock">解锁</el-button>
   </div>
 </template>
 
@@ -13,5 +12,14 @@ export default {
       password: '',
     };
   },
-}
+  methods: {
+    handleUnlock() {
+      if (!this.password) {
+        this.$message.error('请输入密码');
+        return;
+      }
+      this.$emit('unlock', this.password);
+    },
+  },
+};
 </script>

@@ -450,6 +450,10 @@ export default {
       text = text.trim();
       if (!text) {
         this.$message.error("请输入便签的内容");
+        this.$nextTick(() => {
+          this.$bus.$emit('note-add-failed');
+        });
+        return;
       }
       const noteId = this.currentNoteId;
       let category = null;
@@ -469,6 +473,7 @@ export default {
       const saveRes = await this.saveNote(note);
       if (!saveRes) {
         this.$message.error("保存便签失败");
+        this.$bus.$emit('note-add-failed');
         return;
       }
       note = {
