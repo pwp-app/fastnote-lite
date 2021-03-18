@@ -373,8 +373,9 @@ export default {
           this.sortCategoryMap(key);
         });
         return;
+      } else {
+        this.categoryMap[key].sort(noteSorter);
       }
-      this.categoryMap[key].sort(noteSorter);
     },
     // 事件处理
     changeTab(tab) {
@@ -688,7 +689,9 @@ export default {
           // 当前这个分类不存在
           this.categories.push(category);
           this.categoriesMap[name] = category;
-          this.$set(this.categoryMap, name, []);
+          if (!this.categoryMap[name]) {
+            this.$set(this.categoryMap, name, []);
+          }
         } else {
           // 分类存在，直接覆盖相关信息
           this.categoriesMap[name].count = category.count;
